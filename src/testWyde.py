@@ -8,6 +8,14 @@ WYDE_SIZE = 16  # bits
 
 class TestWyde(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        print("\nStart testing %s" % __name__)
+    
+    @classmethod
+    def tearDownClass(cls):
+        print("\nFinish testing %s" % __name__)
+    
     def setUp(self):
         pass
     
