@@ -1,7 +1,7 @@
 ﻿import unittest
 from MMIX import MMIX
 
-class TestOcta(unittest.TestCase):
+class TestMMIX(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -19,7 +19,7 @@ class TestOcta(unittest.TestCase):
     
     def testInit(self):
         '''
-        Verify that Octa instances can be correctly initialized.
+        Verify that MMIX instances can be correctly initialized.
         '''
         mmix = MMIX()
         self.assertEqual(len(mmix.general_purpose_registers), 256)

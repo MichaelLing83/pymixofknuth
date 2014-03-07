@@ -28,3 +28,18 @@ class Byte:
     
     def __sub__(self, another_byte):
         return Byte(int=(self.byte.int - another_byte.byte.int))
+    
+    def __eq__(self, another_byte):
+        return self.byte.uint == another_byte.byte.uint
+    
+    def update(self, int=0, uint=0):
+        if int!=0 and uint==0:
+            self.byte.int = int
+        elif int==0 and uint!=0:
+            self.byte.uint = uint
+        else:
+            self.byte.int = 0
+        self.int = self.byte.int
+        self.uint = self.byte.uint
+        self.bin = self.byte.bin
+        self.hex = self.byte.hex

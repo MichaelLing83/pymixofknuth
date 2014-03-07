@@ -75,6 +75,23 @@ class TestByte(unittest.TestCase):
         self.assertEqual((y+x).int, 5)
         self.assertEqual((x-y).int, -1)
         self.assertEqual((y-x).int, 1)
+    
+    def testCompare(self):
+        '''
+        Verify that two Byte objects could compare if they are equal.
+        '''
+        x = Byte(uint=2)
+        y = Byte(int=2)
+        self.assertEqual(x==y, True)
+        z = Byte(uint=3)
+        self.assertEqual(x==z, False)
+    
+    def testUpdateValue(self):
+        x = Byte(uint=2)
+        x.update(uint=5)
+        self.assertEqual(x.int, 5)
+        self.assertEqual(x.bin, '00000101')
+        self.assertEqual(x.hex, '05')
 
 if __name__ == '__main__':
     unittest.main()
