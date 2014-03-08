@@ -86,6 +86,18 @@ class TestWyde(unittest.TestCase):
         self.assertEqual((y+x).int, 5)
         self.assertEqual((x-y).int, -1)
         self.assertEqual((y-x).int, 1)
+    
+    def testCompare(self):
+        x = Wyde(uint=5)
+        y = Wyde(uint=5)
+        self.assertEqual(x, y)
+    
+    def testUpdateValue(self):
+        x = Wyde(uint=0x1234)
+        x.update(uint=0x2345)
+        self.assertEqual(x.int, 0x2345)
+        self.assertEqual(x.bin, Wyde(uint=0x2345).bin)
+        self.assertEqual(x.hex, '2345')
 
 if __name__ == '__main__':
     unittest.main()

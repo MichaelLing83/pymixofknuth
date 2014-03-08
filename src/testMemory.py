@@ -1,6 +1,7 @@
 ﻿import unittest
 from Memory import Memory
 from Byte import Byte
+from Wyde import Wyde
 from Octa import Octa
 from random import randint
 
@@ -37,6 +38,20 @@ class TestMemory(unittest.TestCase):
             v = Byte(uint=randint(0, 2**8-1))
             memory.setByte(address, v)
             self.assertEqual(memory.readByte(address), v)
+    
+    def testSetAndReadWyde(self):
+        memory = Memory()
+        addresses = list()
+        addresses.append(Octa(uint=0))
+        addresses.append(Octa(uint=2**64-1))
+        for i in range(20):
+            addresses.append(Octa(uint=randint(0+1, 2**64-1-1)))
+        for address in addresses:
+            v = Wyde(uint=randint(0, 2**16-1))
+            memory.setWyde(address, v)
+            #print(memory.readWyde(address).hex)
+            #print(v.hex)
+            self.assertEqual(memory.readWyde(address), v)
 
 if __name__ == '__main__':
     unittest.main()
