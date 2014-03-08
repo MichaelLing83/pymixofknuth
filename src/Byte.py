@@ -1,9 +1,9 @@
 ﻿from bitstring import BitArray
 
 class Byte:
-    BYTE_SIZE_IN_BIT = 8
+    SIZE_IN_BIT = 8
     def __init__(self, int=0, uint=0):
-        self.byte = BitArray(length=Byte.BYTE_SIZE_IN_BIT, uint=0)
+        self.byte = BitArray(length=Byte.SIZE_IN_BIT, uint=0)
         self.length = self.byte.length
         if int!=0 and uint==0:
             self.byte.int = int

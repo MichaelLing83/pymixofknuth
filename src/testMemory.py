@@ -3,6 +3,7 @@ from Memory import Memory
 from Byte import Byte
 from Wyde import Wyde
 from Octa import Octa
+from Tetra import Tetra
 from random import randint
 
 class TestMemory(unittest.TestCase):
@@ -52,6 +53,34 @@ class TestMemory(unittest.TestCase):
             #print(memory.readWyde(address).hex)
             #print(v.hex)
             self.assertEqual(memory.readWyde(address), v)
+    
+    def testSetAndReadTetra(self):
+        memory = Memory()
+        addresses = list()
+        addresses.append(Octa(uint=0))
+        addresses.append(Octa(uint=2**64-1))
+        for i in range(20):
+            addresses.append(Octa(uint=randint(0+1, 2**64-1-1)))
+        for address in addresses:
+            v = Tetra(uint=randint(0, 2**32-1))
+            memory.setTetra(address, v)
+            #print(memory.readTetra(address).hex)
+            #print(v.hex)
+            self.assertEqual(memory.readTetra(address), v)
+    
+    def testSetAndReadOcta(self):
+        memory = Memory()
+        addresses = list()
+        addresses.append(Octa(uint=0))
+        addresses.append(Octa(uint=2**64-1))
+        for i in range(20):
+            addresses.append(Octa(uint=randint(0+1, 2**64-1-1)))
+        for address in addresses:
+            v = Octa(uint=randint(0, 2**64-1))
+            memory.setOcta(address, v)
+            #print(memory.readOcta(address).hex)
+            #print(v.hex)
+            self.assertEqual(memory.readOcta(address), v)
 
 if __name__ == '__main__':
     unittest.main()

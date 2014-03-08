@@ -1,9 +1,9 @@
 ﻿from bitstring import BitArray
 
 class Wyde:
-    WYDE_SIZE_IN_BIT = 16   # bits
+    SIZE_IN_BIT = 16   # bits
     def __init__(self, int=0, uint=0):
-        self.wyde = BitArray(length=Wyde.WYDE_SIZE_IN_BIT, uint=0)
+        self.wyde = BitArray(length=Wyde.SIZE_IN_BIT, uint=0)
         self.length = self.wyde.length
         if int!=0 and uint==0:
             self.wyde.int = int

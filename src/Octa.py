@@ -1,9 +1,9 @@
 ﻿from bitstring import BitArray
 
 class Octa:
-    TETRA_SIZE_IN_BIT = 64   # bits
+    SIZE_IN_BIT = 64   # bits
     def __init__(self, int=0, uint=0):
-        self.octa = BitArray(length=Octa.TETRA_SIZE_IN_BIT, uint=0)
+        self.octa = BitArray(length=Octa.SIZE_IN_BIT, uint=0)
         self.length = self.octa.length
         if int!=0 and uint==0:
             self.octa.int = int
@@ -28,3 +28,6 @@ class Octa:
     
     def __sub__(self, another_Octa):
         return Octa(int=(self.octa.int - another_Octa.octa.int))
+    
+    def __eq__(self, another_Octa):
+        return self.octa.uint == another_Octa.octa.uint

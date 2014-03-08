@@ -86,6 +86,13 @@ class TestTetra(unittest.TestCase):
         self.assertEqual((y+x).int, 5)
         self.assertEqual((x-y).int, -1)
         self.assertEqual((y-x).int, 1)
+    
+    def testUpdateValue(self):
+        x = Tetra(uint=0x12345678)
+        x.update(uint=0x23456789)
+        self.assertEqual(x.int, 0x23456789)
+        self.assertEqual(x.bin, Tetra(uint=0x23456789).bin)
+        self.assertEqual(x.hex, '23456789')
 
 if __name__ == '__main__':
     unittest.main()
