@@ -81,6 +81,9 @@ class TestMemory(unittest.TestCase):
             #print(memory.readOcta(address).hex)
             #print(v.hex)
             self.assertEqual(memory.readOcta(address), v)
+    
+    def test__read_instruction__(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

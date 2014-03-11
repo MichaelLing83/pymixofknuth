@@ -16,3 +16,13 @@ class MMIX:
         
         # add memory
         self.memory = Memory()
+    
+    def __read_instruction__(self, address):
+        '''
+        Read one MMIX instruction, whose most important byte starts from given address.
+
+        @address (Octa): address of the most important byte (big-endian)
+
+        @return (Tetra): an four-byte instruction
+        '''
+        return self.memory.readTetra(address)
