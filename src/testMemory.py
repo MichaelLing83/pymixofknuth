@@ -82,8 +82,24 @@ class TestMemory(unittest.TestCase):
             #print(v.hex)
             self.assertEqual(memory.readOcta(address), v)
     
-    def test__read_instruction__(self):
-        pass
+    def test_print_by_byte(self):
+        '''
+        Verify Memory.print_by_byte dumps memory to a readable string as a Byte array.
+        '''
+        memory = Memory()
+        memory.setByte(Octa(uint=0x1), Byte(uint=0x01))
+        memory.setByte(Octa(uint=0x5), Byte(uint=0x02))
+        result = '''...
+0x0000000000000001:\t0x01
+...
+0x0000000000000005:\t0x02
+...
+'''
+        #print()
+        #print(memory.print_by_byte().__repr__())
+        #print("=================================")
+        #print(result.__repr__())
+        self.assertEqual(memory.print_by_byte(), result)
 
 if __name__ == '__main__':
     unittest.main()

@@ -135,3 +135,31 @@ class Memory:
     
     def readOcta(self, address):
         return self.read(address, Octa)
+    
+    def print_by_byte(self):
+        '''
+        A string representation of current values in memory. Uninitialized bytes in memory (set to 0 by default) will be omitted and printed as "...".
+
+        @return (str): a string representation of memory.
+        '''
+        result = str()
+        address_list = list(self.memory.keys())
+        address_list.sort()
+        is_first_entry = True
+        previous_address_uint = -1
+        for address_uint in address_list:
+            if is_first_entry:
+                is_first_entry = False
+                if address_uint != 0:
+                    result += "...\n"
+                address = Octa(uint=address_uint)
+                result += "0x" + address.hex + ":\t0x" + self.readByte(address).hex + "\n"
+            else:
+                if address_uint != previous_address_uint+1:
+                    result += "...\n"
+                address = Octa(uint=address_uint)
+                result += "0x" + address.hex + ":\t0x" + self.readByte(address).hex + "\n"
+            previous_address_uint = address_uint
+        if address_list[-1] != 2**Octa.SIZE_IN_BIT-1:
+            result += "...\n"
+        return result
