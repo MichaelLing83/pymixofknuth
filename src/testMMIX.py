@@ -97,6 +97,51 @@ class TestMMIX(unittest.TestCase):
         for i in range(MMIX.NUM_OF_GENERAL_PURPOSE_REGISTER):
             result += "%s:\t0x"%hex(i) + Register(uint=i).hex + "\n"
         self.assertEqual(mmix.__print_general_purpose_registers__(), result)
+    
+    def test__print_special_purpose_registers__(self):
+        '''
+        Verify that all special_purpose_registers can be printed for debugging.
+        '''
+        mmix = MMIX()
+        tmp_map = dict()
+        tmp_map[21] = 'rA'
+        tmp_map[0] = 'rB'
+        tmp_map[8] = 'rC'
+        tmp_map[1] = 'rD'
+        tmp_map[2] = 'rE'
+        tmp_map[22] = 'rF'
+        tmp_map[19] = 'rG'
+        tmp_map[3] = 'rH'
+        tmp_map[12] = 'rI'
+        tmp_map[4] = 'rJ'
+        tmp_map[15] = 'rK'
+        tmp_map[20] = 'rL'
+        tmp_map[5] = 'rM'
+        tmp_map[9] = 'rN'
+        tmp_map[10] = 'rO'
+        tmp_map[23] = 'rP'
+        tmp_map[16] = 'rQ'
+        tmp_map[6] = 'rR'
+        tmp_map[11] = 'rS'
+        tmp_map[13] = 'rT'
+        tmp_map[17] = 'rU'
+        tmp_map[18] = 'rV'
+        tmp_map[24] = 'rW'
+        tmp_map[25] = 'rX'
+        tmp_map[26] = 'rY'
+        tmp_map[27] = 'rZ'
+        tmp_map[7] = 'rBB'
+        tmp_map[14] = 'rTT'
+        tmp_map[28] = 'rWW'
+        tmp_map[29] = 'rXX'
+        tmp_map[30] = 'rYY'
+        tmp_map[31] = 'rZZ'
+        for i in range(MMIX.NUM_OF_SPECIAL_PURPOSE_REGISTER):
+            mmix.special_purpose_registers[i].update(uint=i)
+        result = str()
+        for i in range(MMIX.NUM_OF_SPECIAL_PURPOSE_REGISTER):
+            result += "%s:\t0x"%tmp_map[i] + Register(uint=i).hex + "\n"
+        self.assertEqual(mmix.__print_special_purpose_registers__(), result)
 
 if __name__ == '__main__':
     unittest.main()

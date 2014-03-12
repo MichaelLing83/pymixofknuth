@@ -69,3 +69,14 @@ class MMIX:
         for register_index in range(len(self.general_purpose_registers)):
             result += "%s:\t0x"%hex(register_index) + self.general_purpose_registers[register_index].hex + "\n"
         return result
+    
+    def __print_special_purpose_registers__(self):
+        '''
+        Print all special_purpose_registers to a string. Can be used for debugging purpose.
+
+        @return (str): a string representation of all special_purpose_registers.
+        '''
+        result = str()
+        for register_index in range(len(self.special_purpose_registers)):
+            result += "%s:\t0x"%self.special_purpose_register_names[register_index] + self.special_purpose_registers[register_index].hex + "\n"
+        return result
