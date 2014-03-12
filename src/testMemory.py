@@ -40,7 +40,7 @@ class TestMemory(unittest.TestCase):
             memory.setByte(address, v)
             self.assertEqual(memory.readByte(address), v)
     
-    def testSetAndReadWyde(self):
+    def testSetAndReadWydeNormal(self):
         memory = Memory()
         addresses = list()
         addresses.append(Octa(uint=0))
@@ -54,6 +54,11 @@ class TestMemory(unittest.TestCase):
             #print(v.hex)
             self.assertEqual(memory.readWyde(address), v)
             self.assertEqual(memory.readByte(address), Byte(uint=v.uint>>8))
+    
+    def testSetAndReadWydeSpecial(self):
+        memory = Memory()
+        memory.setByte(Octa(uint=0x1), Byte(uint=0x12))
+        self.assertEqual(memory.readWyde(Octa(uint=0x00)), Wyde(uint=0x0012))
     
     def testSetAndReadTetra(self):
         memory = Memory()
@@ -104,17 +109,17 @@ class TestMemory(unittest.TestCase):
     
     def test_print_by_wyde(self):
         '''
-        Verify Memory.print_by_wyde dumps memory to a readable string as a Wyde array.
+        Verify Memory.print_by_wyde dumps memory to a readable string as a Wyde array. Note that it should be aligned to Wyde boundary.
         '''
         memory = Memory()
-        memory.setWyde(Octa(uint=0x1), Wyde(uint=0x01))
-        memory.setWyde(Octa(uint=0x5), Wyde(uint=0x02))
-        memory.setWyde(Octa(uint=0x7), Wyde(uint=0x03))
-        result = '''...
-0x0000000000000001:\t0x0001
-...
-0x0000000000000005:\t0x0002
-0x0000000000000007:\t0x0003
+        memory.setWyde(Octa(uint=0x1), Wyde(uint=0x1234))
+        memory.setWyde(Octa(uint=0x5), Wyde(uint=0x2345))
+        memory.setWyde(Octa(uint=0x7), Wyde(uint=0x3456))
+        result = '''0x0000000000000000:\t0x0012
+0x0000000000000002:\t0x3400
+0x0000000000000004:\t0x0023
+0x0000000000000006:\t0x4534
+0x0000000000000008:\t0x5600
 ...
 '''
         #print()

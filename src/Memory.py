@@ -179,23 +179,28 @@ class Memory:
         #print("address_list=%s" % address_list)
         #print("\n===DEBUG===\n")
         is_first_entry = True
-        previous_address_uint = -1
+        previous_address_uint = -1 * Wyde.SIZE_IN_BYTE
         for address_uint in address_list:
             #print("\n===DEBUG===\n")
             #print("address_uint=%s" % hex(address_uint))
             #print("\n===DEBUG===\n")
             if is_first_entry:
                 is_first_entry = False
-                if address_uint != 0:
+                if address_uint >= Wyde.SIZE_IN_BYTE:
+                    # the first Wyde won't be printed
                     result += "...\n"
+            if address_uint < previous_address_uint + Wyde.SIZE_IN_BYTE:
+                # this byte is already printed
+                continue
             else:
-                if address_uint < previous_address_uint + Wyde.SIZE_IN_BYTE:
-                    # this byte is already printed
-                    continue
-                else:
-                    # we need to print this Wyde
-                    if address_uint != previous_address_uint+Wyde.SIZE_IN_BYTE:
-                        result += "...\n"
+                # we need to print this Wyde
+                # align to Wyde boundary
+                address_uint -= address_uint % Wyde.SIZE_IN_BYTE
+                #print("\n===DEBUG===\n")
+                #print("after aligning address_uint=%s" % hex(address_uint))
+                #print("\n===DEBUG===\n")
+                if address_uint != previous_address_uint+Wyde.SIZE_IN_BYTE:
+                    result += "...\n"
             address = Octa(uint=address_uint)
             result += "0x" + address.hex + ":\t0x" + self.readWyde(address).hex + "\n"
             previous_address_uint = address_uint
