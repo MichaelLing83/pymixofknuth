@@ -27,23 +27,22 @@ class Memory:
         if address.uint >= 2**64:
             raise Exception("Memory_address=%s is out of boundary!" % address.hex)
         byte_mask = 0b11111111
-        size_in_byte = int(Wyde.SIZE_IN_BIT/Byte.SIZE_IN_BIT)
         #print("size_in_byte=", size_in_byte)
-        for offset in range(size_in_byte):
+        for offset in range(Wyde.SIZE_IN_BYTE):
             if address.uint+offset in self.memory:
                 # mask to keep only the relevant byte
-                tmp = value.uint & (byte_mask<<((size_in_byte-offset)*8))
+                tmp = value.uint & (byte_mask<<((Wyde.SIZE_IN_BYTE-offset)*8))
                 #print("Input value 0x", value.hex)
-                #print((value.uint&(byte_mask<<((size_in_byte-offset)*8)))>>((size_in_byte-offset)*8))
-                tmp >>= (size_in_byte-1-offset)*8
+                #print((value.uint&(byte_mask<<((Wyde.SIZE_IN_BYTE-offset)*8)))>>((Wyde.SIZE_IN_BYTE-offset)*8))
+                tmp >>= (Wyde.SIZE_IN_BYTE-1-offset)*8
                 #print("tmp shifted 0x", Wyde(uint=tmp).hex)
                 self.memory[address.uint+offset] = Byte(uint=tmp)
             else:
                 # mask to keep only the relevant byte
-                tmp = value.uint & (byte_mask<<((size_in_byte-1-offset)*8))
+                tmp = value.uint & (byte_mask<<((Wyde.SIZE_IN_BYTE-1-offset)*8))
                 #print("Input value 0x", value.hex)
                 #print("tmp         0x", Wyde(uint=tmp).hex)
-                tmp >>= (size_in_byte-1-offset)*8
+                tmp >>= (Wyde.SIZE_IN_BYTE-1-offset)*8
                 #print("tmp shifted 0x", Wyde(uint=tmp).hex)
                 self.memory[address.uint+offset] = Byte(uint=tmp)
     
@@ -161,5 +160,45 @@ class Memory:
                 result += "0x" + address.hex + ":\t0x" + self.readByte(address).hex + "\n"
             previous_address_uint = address_uint
         if address_list[-1] != 2**Octa.SIZE_IN_BIT-1:
+            result += "...\n"
+        return result
+    
+    def print_by_wyde(self):
+        '''
+        A string representation of current values in memory. Uninitialized wydes in memory (set to 0 by default) will be omitted and printed as "...".
+
+        @return (str): a string representation of memory.
+        '''
+        result = str()
+        address_list = list(self.memory.keys())
+        #print("\n===DEBUG===\n")
+        #print("address_list=%s" % address_list)
+        #print("\n===DEBUG===\n")
+        address_list.sort()
+        #print("\n===DEBUG===\n")
+        #print("address_list=%s" % address_list)
+        #print("\n===DEBUG===\n")
+        is_first_entry = True
+        previous_address_uint = -1
+        for address_uint in address_list:
+            #print("\n===DEBUG===\n")
+            #print("address_uint=%s" % hex(address_uint))
+            #print("\n===DEBUG===\n")
+            if is_first_entry:
+                is_first_entry = False
+                if address_uint != 0:
+                    result += "...\n"
+            else:
+                if address_uint < previous_address_uint + Wyde.SIZE_IN_BYTE:
+                    # this byte is already printed
+                    continue
+                else:
+                    # we need to print this Wyde
+                    if address_uint != previous_address_uint+Wyde.SIZE_IN_BYTE:
+                        result += "...\n"
+            address = Octa(uint=address_uint)
+            result += "0x" + address.hex + ":\t0x" + self.readWyde(address).hex + "\n"
+            previous_address_uint = address_uint
+        if address_list[-1] != 2**Octa.SIZE_IN_BIT-Wyde.SIZE_IN_BYTE:
             result += "...\n"
         return result

@@ -1,7 +1,9 @@
 ﻿from bitstring import BitArray
+from Byte import Byte
 
 class Wyde:
     SIZE_IN_BIT = 16   # bits
+    SIZE_IN_BYTE = int(SIZE_IN_BIT/Byte.SIZE_IN_BIT)    # 2 Byte
     def __init__(self, int=0, uint=0):
         self.wyde = BitArray(length=Wyde.SIZE_IN_BIT, uint=0)
         self.length = self.wyde.length

@@ -53,6 +53,7 @@ class TestMemory(unittest.TestCase):
             #print(memory.readWyde(address).hex)
             #print(v.hex)
             self.assertEqual(memory.readWyde(address), v)
+            self.assertEqual(memory.readByte(address), Byte(uint=v.uint>>8))
     
     def testSetAndReadTetra(self):
         memory = Memory()
@@ -100,6 +101,27 @@ class TestMemory(unittest.TestCase):
         #print("=================================")
         #print(result.__repr__())
         self.assertEqual(memory.print_by_byte(), result)
+    
+    def test_print_by_wyde(self):
+        '''
+        Verify Memory.print_by_wyde dumps memory to a readable string as a Wyde array.
+        '''
+        memory = Memory()
+        memory.setWyde(Octa(uint=0x1), Wyde(uint=0x01))
+        memory.setWyde(Octa(uint=0x5), Wyde(uint=0x02))
+        memory.setWyde(Octa(uint=0x7), Wyde(uint=0x03))
+        result = '''...
+0x0000000000000001:\t0x0001
+...
+0x0000000000000005:\t0x0002
+0x0000000000000007:\t0x0003
+...
+'''
+        #print()
+        #print(memory.print_by_wyde().__repr__())
+        #print("=================================")
+        #print(result.__repr__())
+        self.assertEqual(memory.print_by_wyde(), result)
 
 if __name__ == '__main__':
     unittest.main()

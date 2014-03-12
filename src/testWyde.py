@@ -27,6 +27,7 @@ class TestWyde(unittest.TestCase):
         Verify that Wyde instances can be correctly initialized.
         '''
         wyde = Wyde()
+        self.assertEqual(Wyde.SIZE_IN_BYTE, 2)
         self.assertEqual(wyde.length, WYDE_SIZE, "Size of one Wyde must be %d bits, it is %d bits instead." % (WYDE_SIZE, wyde.length))
         self.assertEqual(wyde.int, 0, "By default, Wyde should be initialized to zero, it is %d in decimal instead." % wyde.int)
         self.assertEqual(wyde.bin, '0'*WYDE_SIZE, "By default, Wyde should be initialized to zero, it is %s in binary instead." % wyde.bin)
