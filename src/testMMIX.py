@@ -3,6 +3,7 @@ from Octa import Octa
 from Byte import Byte
 from Wyde import Wyde
 from Tetra import Tetra
+from Register import Register
 from MMIX import MMIX
 
 class TestMMIX(unittest.TestCase):
@@ -79,11 +80,23 @@ class TestMMIX(unittest.TestCase):
         self.assertEqual(mmix.__get_special_register_index_by_name__('rYY'), 30)
         self.assertEqual(mmix.__get_special_register_index_by_name__('rZZ'), 31)
     
-    def test__print_memory(self):
+    def test__print_memory__(self):
         mmix = MMIX()
         mmix.memory.setOcta(Octa(uint=0x0102030405060708), Octa(uint=0x0102030405060708))
         self.assertEqual(mmix.__print_memory__(), mmix.memory.print_by_byte())
         self.assertEqual(mmix.__print_memory__(unit=Wyde), mmix.memory.print_by_wyde())
+    
+    def test__print_general_purpose_registers__(self):
+        '''
+        Verify that all general_purpose_registers can be printed for debugging.
+        '''
+        mmix = MMIX()
+        for i in range(MMIX.NUM_OF_GENERAL_PURPOSE_REGISTER):
+            mmix.general_purpose_registers[i].update(uint=i)
+        result = str()
+        for i in range(MMIX.NUM_OF_GENERAL_PURPOSE_REGISTER):
+            result += "%s:\t0x"%hex(i) + Register(uint=i).hex + "\n"
+        self.assertEqual(mmix.__print_general_purpose_registers__(), result)
 
 if __name__ == '__main__':
     unittest.main()

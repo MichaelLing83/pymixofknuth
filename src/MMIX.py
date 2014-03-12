@@ -6,13 +6,15 @@ from Wyde import Wyde
 class MMIX:
     ADDRESS_WIDTH_IN_BIT = 64
     REGISTER_BIT_WIDTH = 64
+    NUM_OF_GENERAL_PURPOSE_REGISTER = 256
+    NUM_OF_SPECIAL_PURPOSE_REGISTER = 32
     def __init__(self):
         # add registers
         self.general_purpose_registers = list()
-        for i in range(256):
+        for i in range(MMIX.NUM_OF_GENERAL_PURPOSE_REGISTER):
             self.general_purpose_registers.append(Register())
         self.special_purpose_registers = list()
-        for i in range(32):
+        for i in range(MMIX.NUM_OF_SPECIAL_PURPOSE_REGISTER):
             self.special_purpose_registers.append(Register())
         self.special_purpose_register_names = ('rB', 'rD', 'rE', 'rH', 'rJ', 'rM', 'rR', 'rBB', 'rC', 'rN', 'rO', 'rS', 'rI', 'rT', 'rTT', 'rK', 'rQ', 'rU', 'rV', 'rG', 'rL', 'rA', 'rF', 'rP', 'rW', 'rX', 'rY', 'rZ', 'rWW', 'rXX', 'rYY', 'rZZ')
         
@@ -56,3 +58,14 @@ class MMIX:
             return self.memory.print_by_wyde()
         else:
             raise Exception("Given memory unit=%s is not supported!" % unit)
+    
+    def __print_general_purpose_registers__(self):
+        '''
+        Print all general_purpose_registers to a string. Can be used for debugging purpose.
+
+        @return (str): a string representation of all general_purpose_registers.
+        '''
+        result = str()
+        for register_index in range(len(self.general_purpose_registers)):
+            result += "%s:\t0x"%hex(register_index) + self.general_purpose_registers[register_index].hex + "\n"
+        return result

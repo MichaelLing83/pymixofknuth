@@ -86,6 +86,13 @@ class TestOcta(unittest.TestCase):
         self.assertEqual((y+x).int, 5)
         self.assertEqual((x-y).int, -1)
         self.assertEqual((y-x).int, 1)
+    
+    def testUpdateValue(self):
+        x = Octa(uint=2)
+        x.update(uint=5)
+        self.assertEqual(x.int, 5)
+        self.assertEqual(x.bin, '0'*61+'101')
+        self.assertEqual(x.hex, '00'*7+'05')
 
 if __name__ == '__main__':
     unittest.main()
