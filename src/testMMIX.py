@@ -1,6 +1,7 @@
 ﻿import unittest
 from Octa import Octa
 from Byte import Byte
+from Wyde import Wyde
 from Tetra import Tetra
 from MMIX import MMIX
 
@@ -77,6 +78,12 @@ class TestMMIX(unittest.TestCase):
         self.assertEqual(mmix.__get_special_register_index_by_name__('rXX'), 29)
         self.assertEqual(mmix.__get_special_register_index_by_name__('rYY'), 30)
         self.assertEqual(mmix.__get_special_register_index_by_name__('rZZ'), 31)
+    
+    def test__print_memory(self):
+        mmix = MMIX()
+        mmix.memory.setOcta(Octa(uint=0x0102030405060708), Octa(uint=0x0102030405060708))
+        self.assertEqual(mmix.__print_memory__(), mmix.memory.print_by_byte())
+        self.assertEqual(mmix.__print_memory__(unit=Wyde), mmix.memory.print_by_wyde())
 
 if __name__ == '__main__':
     unittest.main()

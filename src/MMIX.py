@@ -1,5 +1,7 @@
 ﻿from Register import Register
 from Memory import Memory
+from Byte import Byte
+from Wyde import Wyde
 
 class MMIX:
     ADDRESS_WIDTH_IN_BIT = 64
@@ -39,3 +41,18 @@ class MMIX:
             if special_purpose_register_name == self.special_purpose_register_names[i]:
                 return i
         raise Exception("Special purpose register name: %s is not defined." % special_purpose_register_name)
+    
+    def __print_memory__(self, unit=Byte):
+        '''
+        Print current memory to a string. Can be used for debugging purpose.
+
+        @unit=Byte (class): which class to use as printing granuity, Byte or Wyde.
+
+        @return (str): a string representation of current memory.
+        '''
+        if unit==Byte:
+            return self.memory.print_by_byte()
+        elif unit==Wyde:
+            return self.memory.print_by_wyde()
+        else:
+            raise Exception("Given memory unit=%s is not supported!" % unit)
