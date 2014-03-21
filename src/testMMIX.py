@@ -142,6 +142,35 @@ class TestMMIX(unittest.TestCase):
         for i in range(MMIX.NUM_OF_SPECIAL_PURPOSE_REGISTER):
             result += "%s:\t0x"%tmp_map[i] + Register(uint=i).hex + "\n"
         self.assertEqual(mmix.__print_special_purpose_registers__(), result)
+    
+    def test__LDB_direct__(self):
+        '''
+        Verify that "LDB $X, $Y, Z" can load Byte M[$Y+Z] into register $X.
+        '''
+        mmix = MMIX()
+        X = Byte(uint=1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
+        Z = Byte(int=-2)    # an direct operator
+        mmix.memory.setByte(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte(int=-5))
+        mmix.__LDB_direct__(X, Y, Z)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readByte(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int)).int)
+    
+    def test__LDB_indirect__(self):
+        '''
+        Verify that "LDB $X, $Y, $Z" can load Byte M[$Y+$Z] into register $X.
+        '''
+        mmix = MMIX()
+        X = Byte(uint=1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(int=-2), Octa(uint=4)
+        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
+        mmix.memory.setByte(Octa(uint=5+4), Byte(int=-5))
+        mmix.__LDB_indirect__(X, Y, Z)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readByte(Octa(uint=5+4)).int)
 
 if __name__ == '__main__':
     unittest.main()
