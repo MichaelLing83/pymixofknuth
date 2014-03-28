@@ -261,3 +261,76 @@ class MMIX:
         '''
         tmp = self.memory.readTetra(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).uint
         self.general_purpose_registers[X.uint].update(uint=tmp)
+    
+    def __LDx__(self, X, Y, Z, dataType, isSigned, isDirect):
+        '''
+        Load data from memory into general_purpose_register X. How big chunk of data is loaded is based on dataType. Whether Z is a direct operator or an indirect operator depends on isDirect.
+        M[$Y + $Z] or M[$Y + Z] is loaded into register X using given dataType.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): Index to general_purpose_registers;
+        @dataType (class): data type to load, must be one of Byte, Wyde, Tetra, or Octa;
+        @isSigned (bool): whether to use signed value or not;
+        @isDirect (bool): whether Z is an direct operator or not.
+
+        @return (None)
+        '''
+        if isDirect:
+            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)
+        else:
+            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].int)
+        if isSigned:
+            tmp = self.memory.read(memory_addr, dataType).int
+            self.general_purpose_registers[X.uint].update(int=tmp)
+        else:
+            tmp = self.memory.read(memory_addr, dataType).uint
+            self.general_purpose_registers[X.uint].update(uint=tmp)
+    
+    def __LDO_direct__(self, X, Y, Z):
+        '''
+        s(M[$Y + Z]) is loaded into register X as a signed Tetra.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): A direct operator.
+
+        @return (None)
+        '''
+        self.__LDx__(X, Y, Z, Octa, isSigned=True, isDirect=True)
+    
+    def __LDO_indirect__(self, X, Y, Z):
+        '''
+        s(M[$Y + $Z]) is loaded into register X as a signed Tetra.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): Index to general_purpose_registers;
+
+        @return (None)
+        '''
+        self.__LDx__(X, Y, Z, Octa, isSigned=True, isDirect=False)
+    
+    def __LDOU_direct__(self, X, Y, Z):
+        '''
+        u(M[$Y + Z]) is loaded into register X as a unsigned Tetra.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): A direct operator.
+
+        @return (None)
+        '''
+        self.__LDx__(X, Y, Z, Octa, isSigned=False, isDirect=True)
+    
+    def __LDOU_indirect__(self, X, Y, Z):
+        '''
+        u(M[$Y + $Z]) is loaded into register X as a unsigned Tetra.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): Index to general_purpose_registers;
+
+        @return (None)
+        '''
+        self.__LDx__(X, Y, Z, Octa, isSigned=False, isDirect=False)
