@@ -157,3 +157,55 @@ class MMIX:
         #print("memory[$Y+Z]=memory[0x%s]=0x%s" % (Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int).hex, self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).hex))
         #print("==========DEBUG==========")
         self.general_purpose_registers[X.uint].update(uint=tmp)
+    
+    def __LDW_direct__(self, X, Y, Z):
+        '''
+        s(M[$Y + Z]) is loaded into register X as a signed Wyde.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): A direct operator.
+
+        @return (None)
+        '''
+        tmp = self.memory.readWyde(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).int
+        self.general_purpose_registers[X.uint].update(int=tmp)
+    
+    def __LDW_indirect__(self, X, Y, Z):
+        '''
+        s(M[$Y + $Z]) is loaded into register X as a signed Wyde.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): Index to general_purpose_registers;
+
+        @return (None)
+        '''
+        tmp = self.memory.readWyde(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).int
+        self.general_purpose_registers[X.uint].update(int=tmp)
+    
+    def __LDWU_direct__(self, X, Y, Z):
+        '''
+        u(M[$Y + Z]) is loaded into register X as a unsigned Wyde.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): A direct operator.
+
+        @return (None)
+        '''
+        tmp = self.memory.readWyde(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).uint
+        self.general_purpose_registers[X.uint].update(uint=tmp)
+    
+    def __LDWU_indirect__(self, X, Y, Z):
+        '''
+        u(M[$Y + $Z]) is loaded into register X as a unsigned Wyde.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): Index to general_purpose_registers;
+
+        @return (None)
+        '''
+        tmp = self.memory.readWyde(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).uint
+        self.general_purpose_registers[X.uint].update(uint=tmp)
