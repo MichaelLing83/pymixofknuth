@@ -2,6 +2,7 @@
 from Memory import Memory
 from Byte import Byte
 from Wyde import Wyde
+from Tetra import Tetra
 from Octa import Octa
 
 class MMIX:
@@ -92,14 +93,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).int
-        #print("==========DEBUG==========")
-        #print("tmp=%d" % tmp)
-        #print("Y=%d, Z=%d" % (Y.uint, Z.int))
-        #print("$Y=0x%s" % self.general_purpose_registers[Y.uint].hex)
-        #print("memory[$Y+Z]=memory[0x%s]=0x%s" % (Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int).hex, self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).hex))
-        #print("==========DEBUG==========")
-        self.general_purpose_registers[X.uint].update(int=tmp)
+        self.__LDx__(X, Y, Z, Byte, isSigned=True, isDirect=True)
     
     def __LDB_indirect__(self, X, Y, Z):
         '''
@@ -111,14 +105,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).int
-        #print("==========DEBUG==========")
-        #print("tmp=%d" % tmp)
-        #print("Y=%d, Z=%d" % (Y.uint, Z.int))
-        #print("$Y=0x%s" % self.general_purpose_registers[Y.uint].hex)
-        #print("memory[$Y+Z]=memory[0x%s]=0x%s" % (Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int).hex, self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).hex))
-        #print("==========DEBUG==========")
-        self.general_purpose_registers[X.uint].update(int=tmp)
+        self.__LDx__(X, Y, Z, Byte, isSigned=True, isDirect=False)
     
     def __LDBU_direct__(self, X, Y, Z):
         '''
@@ -130,14 +117,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).uint
-        #print("==========DEBUG==========")
-        #print("tmp=%d" % tmp)
-        #print("Y=%d, Z=%d" % (Y.uint, Z.int))
-        #print("$Y=0x%s" % self.general_purpose_registers[Y.uint].hex)
-        #print("memory[$Y+Z]=memory[0x%s]=0x%s" % (Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int).hex, self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).hex))
-        #print("==========DEBUG==========")
-        self.general_purpose_registers[X.uint].update(uint=tmp)
+        self.__LDx__(X, Y, Z, Byte, isSigned=False, isDirect=True)
     
     def __LDBU_indirect__(self, X, Y, Z):
         '''
@@ -149,14 +129,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).uint
-        #print("==========DEBUG==========")
-        #print("tmp=%d" % tmp)
-        #print("Y=%d, Z=%d" % (Y.uint, Z.int))
-        #print("$Y=0x%s" % self.general_purpose_registers[Y.uint].hex)
-        #print("memory[$Y+Z]=memory[0x%s]=0x%s" % (Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int).hex, self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).hex))
-        #print("==========DEBUG==========")
-        self.general_purpose_registers[X.uint].update(uint=tmp)
+        self.__LDx__(X, Y, Z, Byte, isSigned=False, isDirect=False)
     
     def __LDW_direct__(self, X, Y, Z):
         '''
@@ -168,8 +141,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readWyde(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).int
-        self.general_purpose_registers[X.uint].update(int=tmp)
+        self.__LDx__(X, Y, Z, Wyde, isSigned=True, isDirect=True)
     
     def __LDW_indirect__(self, X, Y, Z):
         '''
@@ -181,8 +153,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readWyde(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).int
-        self.general_purpose_registers[X.uint].update(int=tmp)
+        self.__LDx__(X, Y, Z, Wyde, isSigned=True, isDirect=False)
     
     def __LDWU_direct__(self, X, Y, Z):
         '''
@@ -194,8 +165,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readWyde(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).uint
-        self.general_purpose_registers[X.uint].update(uint=tmp)
+        self.__LDx__(X, Y, Z, Wyde, isSigned=False, isDirect=True)
     
     def __LDWU_indirect__(self, X, Y, Z):
         '''
@@ -207,8 +177,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readWyde(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).uint
-        self.general_purpose_registers[X.uint].update(uint=tmp)
+        self.__LDx__(X, Y, Z, Wyde, isSigned=False, isDirect=False)
     
     def __LDT_direct__(self, X, Y, Z):
         '''
@@ -220,8 +189,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readTetra(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).int
-        self.general_purpose_registers[X.uint].update(int=tmp)
+        self.__LDx__(X, Y, Z, Tetra, isSigned=True, isDirect=True)
     
     def __LDT_indirect__(self, X, Y, Z):
         '''
@@ -233,8 +201,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readTetra(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).int
-        self.general_purpose_registers[X.uint].update(int=tmp)
+        self.__LDx__(X, Y, Z, Tetra, isSigned=True, isDirect=False)
     
     def __LDTU_direct__(self, X, Y, Z):
         '''
@@ -246,8 +213,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readTetra(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).uint
-        self.general_purpose_registers[X.uint].update(uint=tmp)
+        self.__LDx__(X, Y, Z, Tetra, isSigned=False, isDirect=True)
     
     def __LDTU_indirect__(self, X, Y, Z):
         '''
@@ -259,8 +225,7 @@ class MMIX:
 
         @return (None)
         '''
-        tmp = self.memory.readTetra(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).uint
-        self.general_purpose_registers[X.uint].update(uint=tmp)
+        self.__LDx__(X, Y, Z, Tetra, isSigned=False, isDirect=False)
     
     def __LDx__(self, X, Y, Z, dataType, isSigned, isDirect):
         '''
