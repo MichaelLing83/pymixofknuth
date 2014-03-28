@@ -209,3 +209,55 @@ class MMIX:
         '''
         tmp = self.memory.readWyde(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).uint
         self.general_purpose_registers[X.uint].update(uint=tmp)
+    
+    def __LDT_direct__(self, X, Y, Z):
+        '''
+        s(M[$Y + Z]) is loaded into register X as a signed Tetra.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): A direct operator.
+
+        @return (None)
+        '''
+        tmp = self.memory.readTetra(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).int
+        self.general_purpose_registers[X.uint].update(int=tmp)
+    
+    def __LDT_indirect__(self, X, Y, Z):
+        '''
+        s(M[$Y + $Z]) is loaded into register X as a signed Tetra.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): Index to general_purpose_registers;
+
+        @return (None)
+        '''
+        tmp = self.memory.readTetra(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).int
+        self.general_purpose_registers[X.uint].update(int=tmp)
+    
+    def __LDTU_direct__(self, X, Y, Z):
+        '''
+        u(M[$Y + Z]) is loaded into register X as a unsigned Tetra.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): A direct operator.
+
+        @return (None)
+        '''
+        tmp = self.memory.readTetra(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).uint
+        self.general_purpose_registers[X.uint].update(uint=tmp)
+    
+    def __LDTU_indirect__(self, X, Y, Z):
+        '''
+        u(M[$Y + $Z]) is loaded into register X as a unsigned Tetra.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): Index to general_purpose_registers;
+
+        @return (None)
+        '''
+        tmp = self.memory.readTetra(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).uint
+        self.general_purpose_registers[X.uint].update(uint=tmp)
