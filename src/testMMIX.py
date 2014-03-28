@@ -374,6 +374,32 @@ class TestMMIX(unittest.TestCase):
         mmix.memory.setOcta(Octa(uint=5+4), Octa(int=99))
         mmix.__LDOU_indirect__(X, Y, Z)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readOcta(Octa(uint=5+4)).uint)
+    
+    def test__LDHT_indirect__(self):
+        '''
+        Verify that "LDHT $X, $Y, $Z|Z" can load Tetra into the most significant half of general_purpose_register X.
+        '''
+        mmix = MMIX()
+        X = Byte(uint=1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(int=-2), Octa(uint=4)
+        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
+        mmix.memory.setTetra(Octa(uint=5-2), Tetra(int=0x12345678))
+        mmix.__LDHT__(X, Y, Z, isDirect=True)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 0x1234567800000000)
+        
+        mmix = MMIX()
+        X = Byte(uint=1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(int=-2), Octa(uint=4)
+        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
+        mmix.memory.setTetra(Octa(uint=5+4), Tetra(int=0x12345678))
+        mmix.__LDHT__(X, Y, Z, isDirect=False)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 0x1234567800000000)
 
 if __name__ == '__main__':
     unittest.main()

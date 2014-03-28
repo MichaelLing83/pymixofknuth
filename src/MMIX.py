@@ -299,3 +299,21 @@ class MMIX:
         @return (None)
         '''
         self.__LDx__(X, Y, Z, Octa, isSigned=False, isDirect=False)
+    
+    def __LDHT__(self, X, Y, Z, isDirect):
+        '''
+        Load one Tetra to the most significant half of general_purpose_register X.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): A direct operator or an index to general_purpose_registers;
+        @isDirect (bool): whether Z is an direct operator or not.
+
+        @return (None)
+        '''
+        if isDirect:
+            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)
+        else:
+            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].int)
+        tmp = self.memory.readTetra(memory_addr).uint
+        self.general_purpose_registers[X.uint].update(int=tmp<<(Octa.SIZE_IN_BIT - Tetra.SIZE_IN_BIT))
