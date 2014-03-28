@@ -119,3 +119,41 @@ class MMIX:
         #print("memory[$Y+Z]=memory[0x%s]=0x%s" % (Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int).hex, self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).hex))
         #print("==========DEBUG==========")
         self.general_purpose_registers[X.uint].update(int=tmp)
+    
+    def __LDBU_direct__(self, X, Y, Z):
+        '''
+        u(M[$Y + Z]) is loaded into register X as a unsigned number between 0 and 255, inclusive.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): A direct operator.
+
+        @return (None)
+        '''
+        tmp = self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).uint
+        #print("==========DEBUG==========")
+        #print("tmp=%d" % tmp)
+        #print("Y=%d, Z=%d" % (Y.uint, Z.int))
+        #print("$Y=0x%s" % self.general_purpose_registers[Y.uint].hex)
+        #print("memory[$Y+Z]=memory[0x%s]=0x%s" % (Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int).hex, self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).hex))
+        #print("==========DEBUG==========")
+        self.general_purpose_registers[X.uint].update(uint=tmp)
+    
+    def __LDBU_indirect__(self, X, Y, Z):
+        '''
+        u(M[$Y + $Z]) is loaded into register X as a unsigned number between 0 and 255, inclusive.
+        
+        @X (Byte): Index to general_purpose_registers;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): Index to general_purpose_registers;
+
+        @return (None)
+        '''
+        tmp = self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].uint)).uint
+        #print("==========DEBUG==========")
+        #print("tmp=%d" % tmp)
+        #print("Y=%d, Z=%d" % (Y.uint, Z.int))
+        #print("$Y=0x%s" % self.general_purpose_registers[Y.uint].hex)
+        #print("memory[$Y+Z]=memory[0x%s]=0x%s" % (Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int).hex, self.memory.readByte(Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)).hex))
+        #print("==========DEBUG==========")
+        self.general_purpose_registers[X.uint].update(uint=tmp)
