@@ -400,6 +400,31 @@ class TestMMIX(unittest.TestCase):
         mmix.memory.setTetra(Octa(uint=5+4), Tetra(int=0x12345678))
         mmix.__LDHT__(X, Y, Z, isDirect=False)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 0x1234567800000000)
+    
+    def test__LDA__(self):
+        '''
+        Verify LDA can load address $Y+$Z|Z can be loaded into $X.
+        '''
+        mmix = MMIX()
+        X = Byte(uint=1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(int=-2), Octa(uint=4)
+        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
+        mmix.__LDA__(X, Y, Z, isDirect=True)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 5-2)
+        
+        mmix = MMIX()
+        X = Byte(uint=1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(int=-2), Octa(uint=4)
+        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
+        mmix.memory.setTetra(Octa(uint=5+4), Tetra(int=0x12345678))
+        mmix.__LDA__(X, Y, Z, isDirect=False)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 5+4)
 
 if __name__ == '__main__':
     unittest.main()
