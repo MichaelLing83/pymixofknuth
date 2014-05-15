@@ -1,6 +1,6 @@
 ﻿import unittest
 from bitstring import BitArray
-from bitstring import CreationError
+from Utilities import MmixException
 from Byte import Byte
 
 BYTE_SIZE = 8
@@ -50,10 +50,10 @@ class TestByte(unittest.TestCase):
             self.assertEqual(byte.hex, reference.hex)
         
         # Initialize with invalid values
-        self.assertRaises(CreationError, Byte, int=-2**(BYTE_SIZE-1)-1)
-        self.assertRaises(CreationError, Byte, int=2**(BYTE_SIZE-1))
-        self.assertRaises(CreationError, Byte, uint=-1)
-        self.assertRaises(CreationError, Byte, uint=2**BYTE_SIZE)
+        self.assertRaises(MmixException, Byte, int=-2**(BYTE_SIZE-1)-1)
+        self.assertRaises(MmixException, Byte, int=2**(BYTE_SIZE-1))
+        self.assertRaises(MmixException, Byte, uint=-1)
+        self.assertRaises(MmixException, Byte, uint=2**BYTE_SIZE)
     
     def testLogic(self):
         '''
