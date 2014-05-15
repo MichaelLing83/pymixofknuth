@@ -1,6 +1,6 @@
 ﻿import unittest
 from bitstring import BitArray
-from bitstring import CreationError
+from Utilities import MmixException
 from Tetra import Tetra
 from random import randint
 
@@ -61,10 +61,10 @@ class TestTetra(unittest.TestCase):
             self.assertEqual(tetra.hex, reference.hex)
         
         # Initialize with invalid values
-        self.assertRaises(CreationError, Tetra, int=-2**(TETRA_SIZE-1)-1)
-        self.assertRaises(CreationError, Tetra, int=2**(TETRA_SIZE-1))
-        self.assertRaises(CreationError, Tetra, uint=-1)
-        self.assertRaises(CreationError, Tetra, uint=2**TETRA_SIZE)
+        self.assertRaises(MmixException, Tetra, int=-2**(TETRA_SIZE-1)-1)
+        self.assertRaises(MmixException, Tetra, int=2**(TETRA_SIZE-1))
+        self.assertRaises(MmixException, Tetra, uint=-1)
+        self.assertRaises(MmixException, Tetra, uint=2**TETRA_SIZE)
     
     def testLogic(self):
         '''

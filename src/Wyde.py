@@ -11,7 +11,8 @@ class Wyde(Numeric):
     SIZE_IN_BIT = 16   # bits
     SIZE_IN_BYTE = int(SIZE_IN_BIT/Byte.SIZE_IN_BIT)    # 2 Byte
     
-    def __init__(self, *args, **kwargs):
+    @typecheck
+    def __init__(self, *args, **kwargs) -> nothing:
         '''
         '''
         self.wyde = self._genBitString(Wyde.SIZE_IN_BIT, *args, **kwargs)

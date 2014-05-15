@@ -1,14 +1,19 @@
 ﻿from bitstring import BitArray
+from Byte import Byte
+from typecheck import *
+from Utilities import guarantee
+from Numeric import Numeric
 
-class Tetra:
+class Tetra(Numeric):
+    '''
+    '''
     SIZE_IN_BIT = 32   # bits
-    def __init__(self, int=0, uint=0):
-        self.tetra = BitArray(length=Tetra.SIZE_IN_BIT, uint=0)
+    SIZE_IN_BYTE = int(SIZE_IN_BIT/Byte.SIZE_IN_BIT)    # 4 Byte
+    
+    @typecheck
+    def __init__(self, *args, **kwargs) -> nothing:
+        self.tetra = self._genBitString(Tetra.SIZE_IN_BIT, *args, **kwargs)
         self.length = self.tetra.length
-        if int!=0 and uint==0:
-            self.tetra.int = int
-        elif int==0 and uint!=0:
-            self.tetra.uint = uint
         self.int = self.tetra.int
         self.uint = self.tetra.uint
         self.bin = self.tetra.bin
@@ -32,14 +37,5 @@ class Tetra:
     def __eq__(self, another_Tetra):
         return self.tetra.uint == another_Tetra.tetra.uint
     
-    def update(self, int=0, uint=0):
-        if int!=0 and uint==0:
-            self.tetra.int = int
-        elif int==0 and uint!=0:
-            self.tetra.uint = uint
-        else:
-            self.tetra.int = 0
-        self.int = self.tetra.int
-        self.uint = self.tetra.uint
-        self.bin = self.tetra.bin
-        self.hex = self.tetra.hex
+    def update(self, *args, **kwargs):
+        self.__init__(*args, **kwargs)
