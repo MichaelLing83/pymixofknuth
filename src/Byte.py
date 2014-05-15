@@ -30,12 +30,12 @@ class Byte(Numeric):
 
         @return (Byte): an instance of Byte class.
         '''
-        self.byte = self._genBitString(Byte.SIZE_IN_BIT, *args, **kwargs)
-        self.length = self.byte.length
-        self.int = self.byte.int
-        self.uint = self.byte.uint
-        self.bin = self.byte.bin
-        self.hex = self.byte.hex
+        self._bitstring = self._genBitString(Byte.SIZE_IN_BIT, *args, **kwargs)
+        self.length = self._bitstring.length
+        self.int = self._bitstring.int
+        self.uint = self._bitstring.uint
+        self.bin = self._bitstring.bin
+        self.hex = self._bitstring.hex
     
     def __and__(self, another_byte: Byte) -> Byte:
         '''
@@ -45,7 +45,7 @@ class Byte(Numeric):
 
         @return (Byte): an instance of Byte as bit and result.
         '''
-        return Byte(uint=(self.byte & another_byte.byte).uint)
+        return Byte(uint=(self._bitstring & another_byte._bitstring).uint)
     
     def __or__(self, another_byte: Byte) -> Byte:
         '''
@@ -55,7 +55,7 @@ class Byte(Numeric):
 
         @return (Byte): an instance of Byte as bit or result.
         '''
-        return Byte(uint=(self.byte | another_byte.byte).uint)
+        return Byte(uint=(self._bitstring | another_byte._bitstring).uint)
     
     def __xor__(self, another_byte: Byte) -> Byte:
         '''
@@ -65,7 +65,7 @@ class Byte(Numeric):
 
         @return (Byte): an instance of Byte as bit xor result.
         '''
-        return Byte(uint=(self.byte ^ another_byte.byte).uint)
+        return Byte(uint=(self._bitstring ^ another_byte._bitstring).uint)
     
     def __add__(self, another_byte: Byte) -> Byte:
         '''
@@ -75,7 +75,7 @@ class Byte(Numeric):
 
         @return (Byte): an instance of Byte as result self+another_byte.
         '''
-        return Byte(int=(self.byte.int + another_byte.byte.int))
+        return Byte(int=(self._bitstring.int + another_byte._bitstring.int))
     
     def __sub__(self, another_byte: Byte) -> Byte:
         '''
@@ -85,14 +85,4 @@ class Byte(Numeric):
 
         @return (Byte): an instance of Byte as result self-another_byte.
         '''
-        return Byte(int=(self.byte.int - another_byte.byte.int))
-    
-    def __eq__(self, another_byte: Byte) -> Byte:
-        '''
-        Compare self with another_byte.
-
-        @another_byte (Byte): another Byte instance.
-
-        @return (bool): True if two Bytes are bit exact.
-        '''
-        return self.byte.uint == another_byte.byte.uint
+        return Byte(int=(self._bitstring.int - another_byte._bitstring.int))

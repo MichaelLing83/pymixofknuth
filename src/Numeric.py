@@ -8,6 +8,9 @@ from typecheck import *
 from Utilities import guarantee
 
 class Numeric:
+    pass
+
+class Numeric:
     '''
     '''
     
@@ -55,3 +58,27 @@ class Numeric:
         @return (null)
         '''
         self.__init__(*args, **kwargs)
+    
+    @typecheck
+    def __sub__(self, another: Numeric) -> Numeric:
+        '''
+        Two Numeric are subtracted as signed integer. Note that overflow would throw an exception.
+
+        @another (Numeric): another Numeric instance.
+
+        @return (Numeric): an instance of Numeric as result.
+        '''
+        #return Byte(int=(self._bitstring.int - another_byte._bitstring.int))
+    
+    @typecheck
+    def __eq__(self, another: lambda x: isinstance(x, Numeric)) -> bool:
+        '''
+        Compare self with another object. Note that they have to have the same length!
+
+        @another (Numeric): another Numeric instance.
+
+        @return (bool): True if two Numeric are bit exact.
+        
+        @raise (MmixExcpetion): if two objects are not of same length
+        '''
+        return self.length == another.length and self._bitstring.uint == another._bitstring.uint
