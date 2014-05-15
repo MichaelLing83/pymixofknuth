@@ -60,7 +60,51 @@ class Numeric:
         self.__init__(*args, **kwargs)
     
     @typecheck
-    def __sub__(self, another: Numeric) -> Numeric:
+    def __and__(self, another: lambda x: isinstance(x, Numeric)) -> lambda x: isinstance(x, Numeric):
+        '''
+        Bit and operator (&).
+
+        @another (Numeric): another Numeric instance.
+
+        @return (Numeric): an instance of Numeric as bit and result.
+        '''
+        return self.__class__(uint=(self._bitstring & another._bitstring).uint)
+    
+    @typecheck
+    def __or__(self, another: lambda x: isinstance(x, Numeric)) -> lambda x: isinstance(x, Numeric):
+        '''
+        Bit or operator (|).
+
+        @another (Numeric): another Numeric instance.
+
+        @return (Numeric): an instance of Numeric as bit or result.
+        '''
+        return self.__class__(uint=(self._bitstring | another._bitstring).uint)
+    
+    @typecheck
+    def __xor__(self, another: lambda x: isinstance(x, Numeric)) -> lambda x: isinstance(x, Numeric):
+        '''
+        Bit xor operator (^).
+
+        @another (Numeric): another Numeric instance.
+
+        @return (Numeric): an instance of Numeric as bit xor result.
+        '''
+        return self.__class__(uint=(self._bitstring ^ another._bitstring).uint)
+    
+    @typecheck
+    def __add__(self, another: lambda x: isinstance(x, Numeric)) -> lambda x: isinstance(x, Numeric):
+        '''
+        Two Numeric are added as signed integer. Note that overflow would throw and exception.
+
+        @another (Numeric): another Numeric instance.
+
+        @return (Numeric): an instance of Numeric as result self+another.
+        '''
+        return self.__class__(int=(self._bitstring.int + another._bitstring.int))
+    
+    @typecheck
+    def __sub__(self, another: lambda x: isinstance(x, Numeric)) -> lambda x: isinstance(x, Numeric):
         '''
         Two Numeric are subtracted as signed integer. Note that overflow would throw an exception.
 
@@ -68,7 +112,8 @@ class Numeric:
 
         @return (Numeric): an instance of Numeric as result.
         '''
-        #return Byte(int=(self._bitstring.int - another_byte._bitstring.int))
+        guarantee(self.length == another.length, "Numeric with different length cannot be subtracted!")
+        return self.__class__(int=(self._bitstring.int - another._bitstring.int))
     
     @typecheck
     def __eq__(self, another: lambda x: isinstance(x, Numeric)) -> bool:
@@ -81,4 +126,5 @@ class Numeric:
         
         @raise (MmixExcpetion): if two objects are not of same length
         '''
+        guarantee(self.length == another.length, "Numeric with different length cannot be compared!")
         return self.length == another.length and self._bitstring.uint == another._bitstring.uint
