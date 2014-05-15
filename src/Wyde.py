@@ -1,16 +1,21 @@
 ﻿from bitstring import BitArray
 from Byte import Byte
+from typecheck import *
+from Utilities import guarantee
+from Numeric import Numeric
 
-class Wyde:
+class Wyde(Numeric):
+    '''
+    '''
+
     SIZE_IN_BIT = 16   # bits
     SIZE_IN_BYTE = int(SIZE_IN_BIT/Byte.SIZE_IN_BIT)    # 2 Byte
-    def __init__(self, int=0, uint=0):
-        self.wyde = BitArray(length=Wyde.SIZE_IN_BIT, uint=0)
+    
+    def __init__(self, *args, **kwargs):
+        '''
+        '''
+        self.wyde = self._genBitString(Wyde.SIZE_IN_BIT, *args, **kwargs)
         self.length = self.wyde.length
-        if int!=0 and uint==0:
-            self.wyde.int = int
-        elif int==0 and uint!=0:
-            self.wyde.uint = uint
         self.int = self.wyde.int
         self.uint = self.wyde.uint
         self.bin = self.wyde.bin
@@ -34,14 +39,7 @@ class Wyde:
     def __eq__(self, another_Wyde):
         return self.wyde.uint == another_Wyde.wyde.uint
     
-    def update(self, int=0, uint=0):
-        if int!=0 and uint==0:
-            self.wyde.int = int
-        elif int==0 and uint!=0:
-            self.wyde.uint = uint
-        else:
-            self.wyde.int = 0
-        self.int = self.wyde.int
-        self.uint = self.wyde.uint
-        self.bin = self.wyde.bin
-        self.hex = self.wyde.hex
+    def update(self, *args, **kwargs):
+        '''
+        '''
+        self.__init__(*args, **kwargs)

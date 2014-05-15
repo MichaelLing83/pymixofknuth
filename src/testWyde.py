@@ -1,6 +1,6 @@
 ﻿import unittest
 from bitstring import BitArray
-from bitstring import CreationError
+from Utilities import MmixException
 from Wyde import Wyde
 from random import randint
 
@@ -62,10 +62,10 @@ class TestWyde(unittest.TestCase):
             self.assertEqual(wyde.hex, reference.hex)
         
         # Initialize with invalid values
-        self.assertRaises(CreationError, Wyde, int=-2**(WYDE_SIZE-1)-1)
-        self.assertRaises(CreationError, Wyde, int=2**(WYDE_SIZE-1))
-        self.assertRaises(CreationError, Wyde, uint=-1)
-        self.assertRaises(CreationError, Wyde, uint=2**WYDE_SIZE)
+        self.assertRaises(MmixException, Wyde, int=-2**(WYDE_SIZE-1)-1)
+        self.assertRaises(MmixException, Wyde, int=2**(WYDE_SIZE-1))
+        self.assertRaises(MmixException, Wyde, uint=-1)
+        self.assertRaises(MmixException, Wyde, uint=2**WYDE_SIZE)
     
     def testLogic(self):
         '''
