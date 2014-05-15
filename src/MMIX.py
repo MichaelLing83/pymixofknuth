@@ -5,6 +5,20 @@ from Wyde import Wyde
 from Tetra import Tetra
 from Octa import Octa
 
+class Instruction:
+    '''
+    Representing one MMIX instruction. It's always four bytes:
+        Instruc, X, Y, Z
+    '''
+    def __init__(self, instruct, X, Y, Z):
+        '''
+        Initialize one MMIX instruction object.
+
+        @instruct (Octa): address of the most important byte (big-endian)
+
+        @return (Tetra): an four-byte instruction
+        '''
+
 class MMIX:
     ADDRESS_WIDTH_IN_BIT = 64
     REGISTER_BIT_WIDTH = 64
