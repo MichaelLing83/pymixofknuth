@@ -96,14 +96,3 @@ class Byte(Numeric):
         @return (bool): True if two Bytes are bit exact.
         '''
         return self.byte.uint == another_byte.byte.uint
-    
-    def update(self, *args, **kwargs) -> nothing:
-        '''
-        Update the value of this Byte object. Note that parameter int and uint are exclusive.
-
-        @int=0 (int): update with an signed integer value.
-        @uint=0 (int): update with an unsigned integer value.
-
-        @return (null)
-        '''
-        self.__init__(*args, **kwargs)

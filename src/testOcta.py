@@ -1,6 +1,6 @@
 ﻿import unittest
 from bitstring import BitArray
-from bitstring import CreationError
+from Utilities import MmixException
 from Octa import Octa
 from random import randint
 
@@ -61,10 +61,10 @@ class TestOcta(unittest.TestCase):
             self.assertEqual(octa.hex, reference.hex)
         
         # Initialize with invalid values
-        self.assertRaises(CreationError, Octa, int=-2**(OCTA_SIZE-1)-1)
-        self.assertRaises(CreationError, Octa, int=2**(OCTA_SIZE-1))
-        self.assertRaises(CreationError, Octa, uint=-1)
-        self.assertRaises(CreationError, Octa, uint=2**OCTA_SIZE)
+        self.assertRaises(MmixException, Octa, int=-2**(OCTA_SIZE-1)-1)
+        self.assertRaises(MmixException, Octa, int=2**(OCTA_SIZE-1))
+        self.assertRaises(MmixException, Octa, uint=-1)
+        self.assertRaises(MmixException, Octa, uint=2**OCTA_SIZE)
     
     def testLogic(self):
         '''

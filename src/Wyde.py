@@ -39,8 +39,3 @@ class Wyde(Numeric):
     
     def __eq__(self, another_Wyde):
         return self.wyde.uint == another_Wyde.wyde.uint
-    
-    def update(self, *args, **kwargs):
-        '''
-        '''
-        self.__init__(*args, **kwargs)

@@ -1,14 +1,20 @@
 ﻿from bitstring import BitArray
+from Utilities import guarantee
+from Numeric import Numeric
+from Byte import Byte
+from typecheck import *
 
-class Octa:
+class Octa(Numeric):
+    '''
+    '''
+    
     SIZE_IN_BIT = 64   # bits
-    def __init__(self, int=0, uint=0):
-        self.octa = BitArray(length=Octa.SIZE_IN_BIT, uint=0)
+    SIZE_IN_BYTE = int(SIZE_IN_BIT/Byte.SIZE_IN_BIT)    # 8 Byte
+    
+    @typecheck
+    def __init__(self, *args, **kwargs) -> nothing:
+        self.octa = self._genBitString(Octa.SIZE_IN_BIT, *args, **kwargs)
         self.length = self.octa.length
-        if int!=0 and uint==0:
-            self.octa.int = int
-        elif int==0 and uint!=0:
-            self.octa.uint = uint
         self.int = self.octa.int
         self.uint = self.octa.uint
         self.bin = self.octa.bin
@@ -31,23 +37,3 @@ class Octa:
     
     def __eq__(self, another_Octa):
         return self.octa.uint == another_Octa.octa.uint
-    
-    def update(self, int=0, uint=0):
-        '''
-        Update the value of this Octa object. Note that parameter int and uint are exclusive.
-
-        @int=0 (int): update with an signed integer value.
-        @uint=0 (int): update with an unsigned integer value.
-
-        @return (null)
-        '''
-        if int!=0 and uint==0:
-            self.octa.int = int
-        elif int==0 and uint!=0:
-            self.octa.uint = uint
-        else:
-            self.octa.int = 0
-        self.int = self.octa.int
-        self.uint = self.octa.uint
-        self.bin = self.octa.bin
-        self.hex = self.octa.hex

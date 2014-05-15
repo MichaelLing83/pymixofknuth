@@ -36,6 +36,3 @@ class Tetra(Numeric):
     
     def __eq__(self, another_Tetra):
         return self.tetra.uint == another_Tetra.tetra.uint
-    
-    def update(self, *args, **kwargs):
-        self.__init__(*args, **kwargs)
