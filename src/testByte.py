@@ -54,6 +54,7 @@ class TestByte(unittest.TestCase):
         self.assertRaises(MmixException, Byte, int=2**(BYTE_SIZE-1))
         self.assertRaises(MmixException, Byte, uint=-1)
         self.assertRaises(MmixException, Byte, uint=2**BYTE_SIZE)
+        self.assertRaises(MmixException, Byte, (1,))
     
     def testLogic(self):
         '''
