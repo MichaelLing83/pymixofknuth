@@ -11,6 +11,7 @@ import pickle
 import re
 from copy import deepcopy
 import argparse
+from contextlib import contextmanager
 
 # parse command line arguments
 class Args: # pylint: disable=R0903
@@ -24,7 +25,20 @@ parser = argparse.ArgumentParser(description='Parse some command line arguments.
 parser.add_argument('-f', '--file', help='Python file to check.', default=None)
 parser.parse_args(namespace=Args)
 
-class TestPylint(unittest.TestCase):
+@contextmanager
+def shell_cmd_output(shell_cmd):
+    '''
+    Execute a shell command using subprocess module, and return its full output (STDOUT and
+    STDERR) as a string.
+    '''
+    try:
+        stdout = subprocess.check_output(shell_cmd, shell=True, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as err:
+        yield err.output.decode("utf-8")
+    else:
+        yield stdout.decode("utf-8")
+
+class TestPylint(unittest.TestCase): # pylint: disable=R0904
     '''
     unittest TC to run pylint over all src/*.py files, and check rating doesn't decrease.
     '''
@@ -36,13 +50,8 @@ class TestPylint(unittest.TestCase):
         if not getcwd().endswith("src"):
             chdir("src")
         TestPylint.pylint_scores = dict()
-        try:
-            f = open(".pylint_scores", 'rb')
+        with open(".pylint_scores", 'rb') as f:
             TestPylint.pylint_scores = pickle.load(f)
-            f.close()
-        except IOError as err: # pylint: disable=W0612
-            # This is the first time, we don't have any historical reference
-            pass
         TestPylint.previous_pylint_scores = deepcopy(TestPylint.pylint_scores)
 
     @classmethod
@@ -78,14 +87,8 @@ class TestPylint(unittest.TestCase):
         for pyfile in glob.glob('*.py'):
             score = -200
             # get pylint rating of current file
-            try:
-                pylint_o = subprocess.check_output(
-                    'pylint --rcfile=.pylintrc %s' % pyfile, shell=True, stderr=subprocess.STDOUT
-                    )
-                score = TestPylint.__get_pylint_score__(pylint_o.decode("utf-8").split('\n'))
-            except subprocess.CalledProcessError as err:
-                score = TestPylint.__get_pylint_score__(err.output.decode("utf-8").split('\n'))
-            # check it's not lower than before
+            with shell_cmd_output('pylint --rcfile=.pylintrc %s' % pyfile) as pylint_o:
+                score = TestPylint.__get_pylint_score__(pylint_o.split('\n'))
             try:
                 self.assertGreaterEqual(score, TestPylint.pylint_scores.get(pyfile, score))
             except AssertionError as err:
@@ -108,14 +111,9 @@ class TestPylint(unittest.TestCase):
         return -2000    # -20.00/10
 
 if __name__ == '__main__':
-    if not Args.file:
+    if not Args.file: # pylint: disable=E1101
         # called from unittest or without --file argument
         unittest.main()
     else:
-        try:
-            pylint_o = subprocess.check_output(
-                "pylint --rcfile=.pylintrc %s" % Args.file, shell=True, stderr=subprocess.STDOUT
-                )
-            print(pylint_o.decode("utf-8"))
-        except subprocess.CalledProcessError as err:
-            print(err.output.decode("utf-8"))
+        with shell_cmd_output("pylint --rcfile=.pylintrc %s" % Args.file) as pylint_o: # pylint: disable=E1101
+            print(pylint_o)
