@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+# pylint: disable=C0103
+'''
+Run pylint over all *.py source codes.
+'''
 import unittest
 from os import getcwd, chdir
 import subprocess
@@ -5,8 +10,24 @@ import glob
 import pickle
 import re
 from copy import deepcopy
+import argparse
+
+# parse command line arguments
+class Args: # pylint: disable=R0903
+    '''
+    Class used to save command line argument parsing results, and some global parameters.
+    '''
+    def __init__(self):
+        raise Exception("Args class should not be instantiated!")
+
+parser = argparse.ArgumentParser(description='Parse some command line arguments.')
+parser.add_argument('-f', '--file', help='Python file to check.', default=None)
+parser.parse_args(namespace=Args)
 
 class TestPylint(unittest.TestCase):
+    '''
+    unittest TC to run pylint over all src/*.py files, and check rating doesn't decrease.
+    '''
     previous_dir = None
     @classmethod
     def setUpClass(cls):
@@ -19,7 +40,7 @@ class TestPylint(unittest.TestCase):
             f = open(".pylint_scores", 'rb')
             TestPylint.pylint_scores = pickle.load(f)
             f.close()
-        except IOError as err:
+        except IOError as err: # pylint: disable=W0612
             # This is the first time, we don't have any historical reference
             pass
         TestPylint.previous_pylint_scores = deepcopy(TestPylint.pylint_scores)
@@ -33,7 +54,13 @@ class TestPylint(unittest.TestCase):
         all_py_files.sort()
         print()
         for py_file in all_py_files:
-            print(''.join(('{:30}'.format(py_file), '{:+.2} -> '.format(TestPylint.previous_pylint_scores[py_file]/100), '{:+.2}'.format(TestPylint.pylint_scores[py_file]/100))))
+            print(''.join(
+                (
+                    '{:30}'.format(py_file),
+                    '{:+.2} -> '.format(TestPylint.previous_pylint_scores[py_file]/100),
+                    '{:+.2}'.format(TestPylint.pylint_scores[py_file]/100)
+                )
+            ))
         print("\nFinish testing %s" % __name__)
         chdir(TestPylint.previous_dir)
 
@@ -52,10 +79,12 @@ class TestPylint(unittest.TestCase):
             score = -200
             # get pylint rating of current file
             try:
-                pylint_o = subprocess.check_output("pylint --rcfile=.pylintrc %s" % pyfile, shell=True, stderr=subprocess.STDOUT)
-                score = self.__get_pylint_score__(pylint_o.decode("utf-8").split('\n'))
+                pylint_o = subprocess.check_output(
+                    'pylint --rcfile=.pylintrc %s' % pyfile, shell=True, stderr=subprocess.STDOUT
+                    )
+                score = TestPylint.__get_pylint_score__(pylint_o.decode("utf-8").split('\n'))
             except subprocess.CalledProcessError as err:
-                score = self.__get_pylint_score__(err.output.decode("utf-8").split('\n'))
+                score = TestPylint.__get_pylint_score__(err.output.decode("utf-8").split('\n'))
             # check it's not lower than before
             try:
                 self.assertGreaterEqual(score, TestPylint.pylint_scores.get(pyfile, score))
@@ -64,11 +93,12 @@ class TestPylint(unittest.TestCase):
                 raise err
             # check passes, then save the new (higher or equal) score
             TestPylint.pylint_scores[pyfile] = score
-    
-    def __get_pylint_score__(self, lines):
+
+    @classmethod
+    def __get_pylint_score__(cls, lines):
         # Your code has been rated at -10.62/10
         for line in lines:
-            m = re.search("Your code has been rated at (\-?\d+\.\d+)/10", line)
+            m = re.search(r"Your code has been rated at (\-?\d+\.\d+)/10", line)
             if m:
                 score = m.group(1)
                 if score[0] == '-':
@@ -78,4 +108,14 @@ class TestPylint(unittest.TestCase):
         return -2000    # -20.00/10
 
 if __name__ == '__main__':
-    unittest.main()
+    if not Args.file:
+        # called from unittest or without --file argument
+        unittest.main()
+    else:
+        try:
+            pylint_o = subprocess.check_output(
+                "pylint --rcfile=.pylintrc %s" % Args.file, shell=True, stderr=subprocess.STDOUT
+                )
+            print(pylint_o.decode("utf-8"))
+        except subprocess.CalledProcessError as err:
+            print(err.output.decode("utf-8"))
