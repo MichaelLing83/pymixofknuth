@@ -387,7 +387,7 @@ class TestMMIX(unittest.TestCase):
         Z, Z_value = Byte(int=-2), Octa(uint=4)
         mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
         mmix.memory.setTetra(Octa(uint=5-2), Tetra(int=0x12345678))
-        mmix.__LDHT__(X, Y, Z, isDirect=True)
+        mmix.__LDHT__(X, Y, Z, is_direct=True)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 0x1234567800000000)
         
         mmix = MMIX()
@@ -398,7 +398,7 @@ class TestMMIX(unittest.TestCase):
         Z, Z_value = Byte(int=-2), Octa(uint=4)
         mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
         mmix.memory.setTetra(Octa(uint=5+4), Tetra(int=0x12345678))
-        mmix.__LDHT__(X, Y, Z, isDirect=False)
+        mmix.__LDHT__(X, Y, Z, is_direct=False)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 0x1234567800000000)
     
     def test__LDA__(self):
@@ -412,7 +412,7 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(int=-2), Octa(uint=4)
         mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.__LDA__(X, Y, Z, isDirect=True)
+        mmix.__LDA__(X, Y, Z, is_direct=True)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 5-2)
         
         mmix = MMIX()
@@ -423,7 +423,7 @@ class TestMMIX(unittest.TestCase):
         Z, Z_value = Byte(int=-2), Octa(uint=4)
         mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
         mmix.memory.setTetra(Octa(uint=5+4), Tetra(int=0x12345678))
-        mmix.__LDA__(X, Y, Z, isDirect=False)
+        mmix.__LDA__(X, Y, Z, is_direct=False)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 5+4)
 
 if __name__ == '__main__':
