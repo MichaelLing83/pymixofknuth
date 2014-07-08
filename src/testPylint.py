@@ -6,7 +6,6 @@ Run pylint over all *.py source codes.
 import unittest
 from os import getcwd, chdir
 import subprocess
-import glob
 import pickle
 import re
 from copy import deepcopy
@@ -84,10 +83,19 @@ class TestPylint(unittest.TestCase): # pylint: disable=R0904
         Run pylint over all source codes.
         '''
         # run pylint over all *.py files.
-        for pyfile in glob.glob('*.py'):
+        pyfiles_to_check = list()
+        with shell_cmd_output('git status -s') as git_o:
+            for line in git_o.split('\n'):
+                m = re.search(r"M\s+([\w\d_]+\.py)", line)
+                if m:
+                    pyfiles_to_check.append(m.group(1))
+        #for pyfile in glob.glob('*.py'):
+        for pyfile in pyfiles_to_check:
             score = -200
             # get pylint rating of current file
+            print()
             with shell_cmd_output('pylint --rcfile=.pylintrc %s' % pyfile) as pylint_o:
+                print('pylint --rcfile=.pylintrc %s' % pyfile)
                 score = TestPylint.__get_pylint_score__(pylint_o.split('\n'))
             try:
                 self.assertGreaterEqual(score, TestPylint.pylint_scores.get(pyfile, score))
