@@ -18,7 +18,7 @@
 #     ...
 #
 # @typecheck
-# def foo(ostream: with_attr("write", "flush"), f: optional(callable) = None):
+# def foo(ostream: with_attr("write", "flush"), f: optional(is_callable) = None):
 #     ...
 #
 # divisible_by_three = lambda x: x % 3 == 0
@@ -67,7 +67,7 @@ __all__ = [
 
 # check predicates
 
-"optional", "with_attr", "by_regex", "callable", "anything", "nothing",
+"optional", "with_attr", "by_regex", "is_callable", "anything", "nothing",
 "tuple_of", "list_of", "dict_of", "one_of", "either",
 
 # exceptions
@@ -87,7 +87,7 @@ import inspect
 import functools
 import re
 
-callable = lambda x: hasattr(x, "__call__")
+is_callable = lambda x: hasattr(x, "__call__")
 anything = lambda x: True
 nothing = lambda x: x is None
 
@@ -176,7 +176,7 @@ class CallableChecker(Checker):
     def check(self, value):
         return bool(self._func(value))
 
-Checker.register(callable, CallableChecker)
+Checker.register(is_callable, CallableChecker)
 
 ################################################################################
 

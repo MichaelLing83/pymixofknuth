@@ -39,13 +39,13 @@ class Numeric:
             if list(kwargs.keys())[0] == 'int':
                 guarantee(
                     kwargs['int'] >= -1 * (2 ** (size_in_bit - 1)) and kwargs['int'] <= (2 ** (size_in_bit - 1)) - 1,
-                    "int(%d) is out of range!" % kwargs['int']
+                    "int(%d) is out of range for %d bits!" % (kwargs['int'], size_in_bit)
                     )
                 result.int = kwargs['int']
             else:
                 guarantee(
                     kwargs['uint'] >= 0 and kwargs['uint'] <= (2 ** size_in_bit) -1,
-                    "uint(%d) is out of range!" % kwargs['uint']
+                    "uint(%d) is out of range for %d bits!" % (kwargs['uint'], size_in_bit)
                     )
                 result.uint = kwargs['uint']
         return result
