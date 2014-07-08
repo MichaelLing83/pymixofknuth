@@ -1,4 +1,7 @@
-﻿from Register import Register
+﻿'''
+MMIX computer simulator.
+'''
+from Register import Register
 from Memory import Memory
 from Byte import Byte
 from Wyde import Wyde
@@ -22,6 +25,9 @@ class Instruction:
         '''
 
 class MMIX:
+    '''
+    A class representing a MMIX machine.
+    '''
     ADDRESS_WIDTH_IN_BIT = 64
     REGISTER_BIT_WIDTH = 64
     NUM_OF_GENERAL_PURPOSE_REGISTER = 256
@@ -347,7 +353,10 @@ class MMIX:
     @typecheck
     def __LDHT__(self, X: Byte, Y: Byte, Z: Byte, is_direct: bool) -> nothing:
         '''
-        Load one Tetra to the most significant half of general_purpose_register X.
+        Load high Tetra
+        Bytes M_4[$Y + $Z] or M_4[$Y + Z] are loaded into the most significant half of register X, and the least
+        significant half is cleared to zero. (One use of “high tetra arithmetic” is to detect overflow easily when
+        tetrabytes are added or subtracted.)
 
         @X (Byte): Index to general_purpose_registers;
         @Y (Byte): Index to general_purpose_registers;
@@ -366,7 +375,10 @@ class MMIX:
     @typecheck
     def __LDA__(self, X: Byte, Y: Byte, Z: Byte, is_direct: bool) -> nothing:
         '''
-        Load memory address $Y + $Z|Z into general_purpose_register X.
+        Load address.
+        The address $Y + $Z or $Y + Z is loaded into register X. This instruction is simply another name for the
+        ADDU instruction discussed below; it can be used when the programmer is thinking of memory addresses
+        instead of numbers. The MMIX assembler converts LDA into the same OP-code as ADDU.
 
         @X (Byte): Index to general_purpose_registers;
         @Y (Byte): Index to general_purpose_registers;
@@ -380,3 +392,31 @@ class MMIX:
         else:
             memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].int)
         self.general_purpose_registers[X.uint].update(uint=memory_addr.uint)
+
+    @typecheck
+    def __STx__(self, X: Byte, Y: Byte, Z: Byte, data_type: one_of((Byte, Wyde, Tetra, Octa)), is_signed: bool, is_direct: bool) -> nothing:
+        '''
+        Store registers into memory. How big chunk of data is loaded is based on data_type. Whether Z is a direct operator or an indirect
+        operator depends on is_direct.
+        register X is stored to M[$Y + $Z] or M[$Y + Z] using given data_type.
+
+        @X (Byte): Index to general_purpose_registers, which to be stored;
+        @Y (Byte): Index to general_purpose_registers;
+        @Z (Byte): Index to general_purpose_registers;
+        @data_type (class): data type to load, must be one of Byte, Wyde, Tetra, or Octa;
+        @is_signed (bool): whether to use signed value or not;
+        @is_direct (bool): whether Z is an direct operator or not.
+
+        @return (None)
+        '''
+        if is_direct:
+            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint + Z.int)
+        else:
+            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint + self.general_purpose_registers[Z.uint].int)
+        if is_signed:
+            # TODO: overflow check needs to be added.
+            tmp = self.general_purpose_registers[X.uint].uint & Byte(uint=0xFF)
+            self.memory.set(memory_addr, Byte, Byte(uint=tmp))
+        else:
+            tmp = self.general_purpose_registers[X.uint].uint & Byte(uint=0xFF)
+            self.memory.set(memory_addr, Byte, Byte(uint=tmp))

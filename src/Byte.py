@@ -19,6 +19,7 @@ class Byte(Numeric):
     One byte = 8 bits.
     '''
     SIZE_IN_BIT = 8
+    SIZE_IN_BYTE = 1
     
     @typecheck
     def __init__(self, *args, **kwargs) -> nothing:

@@ -44,9 +44,9 @@ class TestMemory(unittest.TestCase):
         memory = Memory()
         addresses = list()
         addresses.append(Octa(uint=0))
-        addresses.append(Octa(uint=2**64-1))
+        addresses.append(Octa(uint=2**64-2))
         for i in range(20):
-            addresses.append(Octa(uint=randint(0+1, 2**64-1-1)))
+            addresses.append(Octa(uint=randint(0+1, 2**64-2-1)))
         for address in addresses:
             v = Wyde(uint=randint(0, 2**16-1))
             memory.setWyde(address, v)
@@ -57,16 +57,16 @@ class TestMemory(unittest.TestCase):
     
     def testSetAndReadWydeSpecial(self):
         memory = Memory()
-        memory.setByte(Octa(uint=0x1), Byte(uint=0x12))
+        memory.setByte(Octa(uint=0x01), Byte(uint=0x12))
         self.assertEqual(memory.readWyde(Octa(uint=0x00)), Wyde(uint=0x0012))
     
     def testSetAndReadTetra(self):
         memory = Memory()
         addresses = list()
         addresses.append(Octa(uint=0))
-        addresses.append(Octa(uint=2**64-1))
+        addresses.append(Octa(uint=2**64-4))
         for i in range(20):
-            addresses.append(Octa(uint=randint(0+1, 2**64-1-1)))
+            addresses.append(Octa(uint=randint(0+1, 2**64-4-1)))
         for address in addresses:
             v = Tetra(uint=randint(0, 2**32-1))
             memory.setTetra(address, v)
@@ -78,9 +78,9 @@ class TestMemory(unittest.TestCase):
         memory = Memory()
         addresses = list()
         addresses.append(Octa(uint=0))
-        addresses.append(Octa(uint=2**64-1))
+        addresses.append(Octa(uint=2**64-8))
         for i in range(20):
-            addresses.append(Octa(uint=randint(0+1, 2**64-1-1)))
+            addresses.append(Octa(uint=randint(0+1, 2**64-8-1)))
         for address in addresses:
             v = Octa(uint=randint(0, 2**64-1))
             memory.setOcta(address, v)
