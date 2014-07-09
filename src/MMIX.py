@@ -415,8 +415,14 @@ class MMIX:
             memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint + self.general_purpose_registers[Z.uint].int)
         if is_signed:
             # TODO: overflow check needs to be added.
-            tmp = self.general_purpose_registers[X.uint].uint & Byte(uint=0xFF)
+            tmp = self.general_purpose_registers[X.uint].uint & 0xFF
             self.memory.set(memory_addr, Byte, Byte(uint=tmp))
         else:
-            tmp = self.general_purpose_registers[X.uint].uint & Byte(uint=0xFF)
+            tmp = self.general_purpose_registers[X.uint].uint & 0xFF
             self.memory.set(memory_addr, Byte, Byte(uint=tmp))
+    
+    @typecheck
+    def __STB__(self, X: Byte, Y: Byte, Z: Byte, is_direct: bool) -> nothing:
+        '''
+        '''
+        self.__STx__(X, Y, Z, Byte, True, is_direct)
