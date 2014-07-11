@@ -57,42 +57,6 @@ class Numeric:  # pylint: disable=E0102
         self.hex = self._bitstring.hex
 
     @typecheck
-    def _genBitString(self, size_in_bit: lambda x: x % Numeric.BYTE_SIZE_IN_BIT == 0, *args, **kwargs) -> BitArray:
-        '''
-        Generate a BitArray object and returns.
-
-        @int=0 (int): initialize with an signed integer value.
-        @uint=0 (int): initialize with an unsigned integer value.
-
-        @return (BitArray): an instance of BitArray class.
-        '''
-        guarantee(len(args) == 0, "%s takes no positional args!" % __name__)
-        result = BitArray(length=size_in_bit, uint=0)
-        if len(kwargs.keys()) == 0:
-            # no kwargs is given, use default value 0
-            result.int = 0
-        else:
-            # handle kwargs
-            guarantee(len(kwargs.keys()) == 1, "%s kwargs given, only 1 expected (int or uint)!" % len(args))
-            guarantee(
-                list(kwargs.keys())[0] in ('int', 'uint'),
-                "%s is an invalid argument, only int or uint argument can be used!" % list(kwargs.keys())[0]
-                )
-            if list(kwargs.keys())[0] == 'int':
-                guarantee(
-                    kwargs['int'] >= -1 * (2 ** (size_in_bit - 1)) and kwargs['int'] <= (2 ** (size_in_bit - 1)) - 1,
-                    "int(%d) is out of range for %d bits!" % (kwargs['int'], size_in_bit)
-                    )
-                result.int = kwargs['int']
-            else:
-                guarantee(
-                    kwargs['uint'] >= 0 and kwargs['uint'] <= (2 ** size_in_bit) -1,
-                    "uint(%d) is out of range for %d bits!" % (kwargs['uint'], size_in_bit)
-                    )
-                result.uint = kwargs['uint']
-        return result
-
-    @typecheck
     def set_value(
             self,
             value: lambda x: isinstance(x, Numeric) or isinstance(x, int)=0
@@ -122,7 +86,7 @@ class Numeric:  # pylint: disable=E0102
         mask = 2 ** self.__class__.SIZE_IN_BIT - 1 # pylint: disable=E1101
         mask = mask ^ (0xff << ((self.__class__.SIZE_IN_BYTE - index - 1) * Numeric.BYTE_SIZE_IN_BIT))  # mask off the correct byte
         tmp = self.uint & mask  # mask off the byte to set in this object
-        tmp = tmp | value.uint << ((self.__class__.SIZE_IN_BYTE - index - 1) * Numeric.BYTE_SIZE_IN_BIT)
+        tmp = tmp | value.uint << ((self.__class__.SIZE_IN_BYTE - index - 1) * Numeric.BYTE_SIZE_IN_BIT) # pylint: disable=E1101
         self.__init_self__(self.__class__, tmp)
 
     @typecheck
@@ -142,14 +106,14 @@ class Numeric:  # pylint: disable=E0102
         if isinstance(index, Numeric):
             index = index.uint
         guarantee(
-            index >= 0 and index + klass.SIZE_IN_BYTE - 1 < self.__class__.SIZE_IN_BYTE,
+            index >= 0 and index + klass.SIZE_IN_BYTE - 1 < self.__class__.SIZE_IN_BYTE, # pylint: disable=E1101
             "Given index={index}, class={klass} is out of range for class {this_klass}!".format(
                 index=index, klass=klass, this_klass=self.__class__
                 )
             )
         mask = (2 ** klass.SIZE_IN_BIT - 1) << ((self.__class__.SIZE_IN_BYTE - index - klass.SIZE_IN_BYTE) * Numeric.BYTE_SIZE_IN_BIT)
         tmp = self.uint & mask  # mask to have only the bytes to get in this object
-        tmp = tmp >> ((self.__class__.SIZE_IN_BYTE - index - klass.SIZE_IN_BYTE) * Numeric.BYTE_SIZE_IN_BIT)
+        tmp = tmp >> ((self.__class__.SIZE_IN_BYTE - index - klass.SIZE_IN_BYTE) * Numeric.BYTE_SIZE_IN_BIT) # pylint: disable=E1101
         return klass(tmp)
 
     @typecheck
@@ -170,13 +134,13 @@ class Numeric:  # pylint: disable=E0102
         if isinstance(index, Numeric):
             index = index.uint
         guarantee(
-            index >= 0 and index + value.__class__.SIZE_IN_BYTE - 1 < self.__class__.SIZE_IN_BYTE,
+            index >= 0 and index + value.__class__.SIZE_IN_BYTE - 1 < self.__class__.SIZE_IN_BYTE, # pylint: disable=E1101
             "Given index={index}, class={klass} is out of range for class {this_klass}!".format(
                 index=index, klass=value.__class__, this_klass=self.__class__
                 )
             )
         mask = (2 ** value.__class__.SIZE_IN_BIT - 1) << (
-            (self.__class__.SIZE_IN_BYTE - index - value.__class__.SIZE_IN_BYTE) * Numeric.BYTE_SIZE_IN_BIT
+            (self.__class__.SIZE_IN_BYTE - index - value.__class__.SIZE_IN_BYTE) * Numeric.BYTE_SIZE_IN_BIT # pylint: disable=E1101
             )
         tmp = self.uint & (~mask)  # mask away the bytes to update in this object
         tmp = tmp | (value.uint << ((self.__class__.SIZE_IN_BYTE - index - value.__class__.SIZE_IN_BYTE) * Numeric.BYTE_SIZE_IN_BIT))
