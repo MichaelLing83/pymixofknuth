@@ -47,9 +47,9 @@ class Numeric:  # pylint: disable=E0102
         else:
             # init with an integer
             if value < 0:
-                self._bitstring = self._genBitString(klass.SIZE_IN_BIT, int=value)
+                self._bitstring = BitArray(length=klass.SIZE_IN_BIT, int=value)
             else:
-                self._bitstring = self._genBitString(klass.SIZE_IN_BIT, uint=value)
+                self._bitstring = BitArray(length=klass.SIZE_IN_BIT, uint=value)
         self.length = self._bitstring.length
         self.int = self._bitstring.int
         self.uint = self._bitstring.uint

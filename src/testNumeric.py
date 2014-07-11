@@ -38,9 +38,21 @@ class TestNumeric(unittest.TestCase):
         '''
         for klass in all_classes:
             obj = klass()
-            self.assertEqual(obj.length, size_in_bit[klass], "Size of one {klass} must be 8 bits, it is {length} bits instead.".format(klass=klass, length=obj.length))
-            self.assertEqual(obj.int, 0, "By default, {klass} should be initialized to zero, it is {int} in decimal instead.".format(klass=klass, int=obj.int))
-            self.assertEqual(obj.bin, '0' * size_in_bit[klass], "By default, {klass} should be initialized to zero, it is {bin} in binary instead.".format(klass=klass, bin=obj.bin))
+            self.assertEqual(
+                obj.length,
+                size_in_bit[klass],
+                "Size of one {klass} must be 8 bits, it is {length} bits instead.".format(klass=klass, length=obj.length)
+            )
+            self.assertEqual(
+                obj.int,
+                0,
+                "By default, {klass} should be initialized to zero, it is {int} in decimal instead.".format(klass=klass, int=obj.int)
+            )
+            self.assertEqual(
+                obj.bin,
+                '0' * size_in_bit[klass],
+                "By default, {klass} should be initialized to zero, it is {bin} in binary instead.".format(klass=klass, bin=obj.bin)
+            )
             self.assertEqual(obj.hex, '0' * int(size_in_bit[klass] / 4))
 
         # Initialize with valid signed values
@@ -75,10 +87,8 @@ class TestNumeric(unittest.TestCase):
 
         # Initialize with invalid values
         for klass in all_classes:
-            self.assertRaises(MmixException, klass, -2**(size_in_bit[klass]-1)-1)
-            self.assertRaises(MmixException, klass, 2**size_in_bit[klass])
-            # self.assertRaises(MmixException, klass, -1)
-            # self.assertRaises(MmixException, klass, 2**size_in_bit[klass])
+            self.assertRaises(Exception, klass, -2**(size_in_bit[klass]-1)-1)
+            self.assertRaises(Exception, klass, 2**size_in_bit[klass])
 
     def testLogic(self):
         '''
