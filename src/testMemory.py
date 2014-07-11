@@ -31,44 +31,44 @@ class TestMemory(unittest.TestCase):
     def testSetAndReadByte(self):
         memory = Memory()
         addresses = list()
-        addresses.append(Octa(uint=0))
-        addresses.append(Octa(uint=2**64-1))
+        addresses.append(Octa(0))
+        addresses.append(Octa(2**64-1))
         for i in range(20):
-            addresses.append(Octa(uint=randint(0+1, 2**64-1-1)))
+            addresses.append(Octa(randint(0+1, 2**64-1-1)))
         for address in addresses:
-            v = Byte(uint=randint(0, 2**8-1))
+            v = Byte(randint(0, 2**8-1))
             memory.setByte(address, v)
             self.assertEqual(memory.readByte(address), v)
     
     def testSetAndReadWydeNormal(self):
         memory = Memory()
         addresses = list()
-        addresses.append(Octa(uint=0))
-        addresses.append(Octa(uint=2**64-2))
+        addresses.append(Octa(0))
+        addresses.append(Octa(2**64-2))
         for i in range(20):
-            addresses.append(Octa(uint=randint(0+1, 2**64-2-1)))
+            addresses.append(Octa(randint(0+1, 2**64-2-1)))
         for address in addresses:
-            v = Wyde(uint=randint(0, 2**16-1))
+            v = Wyde(randint(0, 2**16-1))
             memory.setWyde(address, v)
             #print(memory.readWyde(address).hex)
             #print(v.hex)
             self.assertEqual(memory.readWyde(address), v)
-            self.assertEqual(memory.readByte(address), Byte(uint=v.uint>>8))
+            self.assertEqual(memory.readByte(address), Byte(v.uint>>8))
     
     def testSetAndReadWydeSpecial(self):
         memory = Memory()
-        memory.setByte(Octa(uint=0x01), Byte(uint=0x12))
-        self.assertEqual(memory.readWyde(Octa(uint=0x00)), Wyde(uint=0x0012))
+        memory.setByte(Octa(0x01), Byte(0x12))
+        self.assertEqual(memory.readWyde(Octa(0x00)), Wyde(0x0012))
     
     def testSetAndReadTetra(self):
         memory = Memory()
         addresses = list()
-        addresses.append(Octa(uint=0))
-        addresses.append(Octa(uint=2**64-4))
+        addresses.append(Octa(0))
+        addresses.append(Octa(2**64-4))
         for i in range(20):
-            addresses.append(Octa(uint=randint(0+1, 2**64-4-1)))
+            addresses.append(Octa(randint(0+1, 2**64-4-1)))
         for address in addresses:
-            v = Tetra(uint=randint(0, 2**32-1))
+            v = Tetra(randint(0, 2**32-1))
             memory.setTetra(address, v)
             #print(memory.readTetra(address).hex)
             #print(v.hex)
@@ -77,12 +77,12 @@ class TestMemory(unittest.TestCase):
     def testSetAndReadOcta(self):
         memory = Memory()
         addresses = list()
-        addresses.append(Octa(uint=0))
-        addresses.append(Octa(uint=2**64-8))
+        addresses.append(Octa(0))
+        addresses.append(Octa(2**64-8))
         for i in range(20):
-            addresses.append(Octa(uint=randint(0+1, 2**64-8-1)))
+            addresses.append(Octa(randint(0+1, 2**64-8-1)))
         for address in addresses:
-            v = Octa(uint=randint(0, 2**64-1))
+            v = Octa(randint(0, 2**64-1))
             memory.setOcta(address, v)
             #print(memory.readOcta(address).hex)
             #print(v.hex)
@@ -93,8 +93,8 @@ class TestMemory(unittest.TestCase):
         Verify Memory.print_by_byte dumps memory to a readable string as a Byte array.
         '''
         memory = Memory()
-        memory.setByte(Octa(uint=0x1), Byte(uint=0x01))
-        memory.setByte(Octa(uint=0x5), Byte(uint=0x02))
+        memory.setByte(Octa(0x1), Byte(0x01))
+        memory.setByte(Octa(0x5), Byte(0x02))
         result = '''...
 0x0000000000000001:\t0x01
 ...
@@ -112,9 +112,9 @@ class TestMemory(unittest.TestCase):
         Verify Memory.print_by_wyde dumps memory to a readable string as a Wyde array. Note that it should be aligned to Wyde boundary.
         '''
         memory = Memory()
-        memory.setWyde(Octa(uint=0x1), Wyde(uint=0x1234))
-        memory.setWyde(Octa(uint=0x5), Wyde(uint=0x2345))
-        memory.setWyde(Octa(uint=0x7), Wyde(uint=0x3456))
+        memory.setWyde(Octa(0x1), Wyde(0x1234))
+        memory.setWyde(Octa(0x5), Wyde(0x2345))
+        memory.setWyde(Octa(0x7), Wyde(0x3456))
         result = '''0x0000000000000000:\t0x0012
 0x0000000000000002:\t0x3400
 0x0000000000000004:\t0x0023

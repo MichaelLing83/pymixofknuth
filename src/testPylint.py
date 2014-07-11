@@ -100,7 +100,11 @@ class TestPylint(unittest.TestCase): # pylint: disable=R0904
             try:
                 self.assertGreaterEqual(score, TestPylint.pylint_scores.get(pyfile, score))
             except AssertionError as err:
-                print("ERROR: pylint rating of {filename} has decreased!".format(filename=pyfile))
+                print(
+                    "ERROR: pylint rating of {filename} has decreased from {old_rating:2.2f} to {new_rating:2.2f}!".format(
+                        filename=pyfile, old_rating=TestPylint.pylint_scores.get(pyfile, score) / 100, new_rating=score / 100
+                    )
+                )
                 raise err # failed due to pylint rating degradation
             # check passes, then save the new (higher or equal) score
             TestPylint.pylint_scores[pyfile] = score

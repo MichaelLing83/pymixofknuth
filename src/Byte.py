@@ -9,31 +9,27 @@ from bitstring import BitArray
 from typecheck import *
 from Utilities import guarantee
 from Numeric import Numeric
+from copy import deepcopy
 
 class Byte(Numeric):
-    # TODO: is this work-around necessary to refer to Byte in its class definition?
+    # work-around to refer to Byte in typecheck
     pass
 
 class Byte(Numeric):
     '''
     One byte = 8 bits.
     '''
-    SIZE_IN_BIT = 8
+    SIZE_IN_BIT = Numeric.BYTE_SIZE_IN_BIT
     SIZE_IN_BYTE = 1
-    
-    @typecheck
-    def __init__(self, *args, **kwargs) -> nothing:
-        '''
-        Initializer. Note that parameter int and uint are exclusive.
 
-        @int=0 (int): initialize with an signed integer value.
-        @uint=0 (int): initialize with an unsigned integer value.
+    @typecheck
+    def __init__(
+            self,
+            value: lambda x: isinstance(x, Byte) or isinstance(x, int)=0
+        ) -> nothing:
+        '''
+        Create a Byte object.
 
         @return (Byte): an instance of Byte class.
         '''
-        self._bitstring = self._genBitString(Byte.SIZE_IN_BIT, *args, **kwargs)
-        self.length = self._bitstring.length
-        self.int = self._bitstring.int
-        self.uint = self._bitstring.uint
-        self.bin = self._bitstring.bin
-        self.hex = self._bitstring.hex
+        self.__init_self__(Byte, value)

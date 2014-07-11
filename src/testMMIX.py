@@ -36,11 +36,11 @@ class TestMMIX(unittest.TestCase):
         Verify that MMIX can read one instruction.
         '''
         mmix = MMIX()
-        mmix.memory.setByte(Octa(uint=0), Byte(uint=0x31))
-        mmix.memory.setByte(Octa(uint=1), Byte(uint=0x32))
-        mmix.memory.setByte(Octa(uint=2), Byte(uint=0x33))
-        mmix.memory.setByte(Octa(uint=3), Byte(uint=0x34))
-        self.assertEqual(mmix.__read_instruction__(Octa(uint=0)), Tetra(uint=0x31323334))
+        mmix.memory.setByte(Octa(0), Byte(0x31))
+        mmix.memory.setByte(Octa(1), Byte(0x32))
+        mmix.memory.setByte(Octa(2), Byte(0x33))
+        mmix.memory.setByte(Octa(3), Byte(0x34))
+        self.assertEqual(mmix.__read_instruction__(Octa(0)), Tetra(0x31323334))
 
     def test__get_special_register_index_by_name__(self):
         '''
@@ -82,7 +82,7 @@ class TestMMIX(unittest.TestCase):
 
     def test__print_memory__(self):
         mmix = MMIX()
-        mmix.memory.setOcta(Octa(uint=0x0102030405060708), Octa(uint=0x0102030405060708))
+        mmix.memory.setOcta(Octa(0x0102030405060708), Octa(0x0102030405060708))
         self.assertEqual(mmix.__print_memory__(), mmix.memory.print_by_byte())
         self.assertEqual(mmix.__print_memory__(unit=Wyde), mmix.memory.print_by_wyde())
 
@@ -92,10 +92,10 @@ class TestMMIX(unittest.TestCase):
         '''
         mmix = MMIX()
         for i in range(MMIX.NUM_OF_GENERAL_PURPOSE_REGISTER):
-            mmix.general_purpose_registers[i].update(uint=i)
+            mmix.general_purpose_registers[i].set_value(i)
         result = str()
         for i in range(MMIX.NUM_OF_GENERAL_PURPOSE_REGISTER):
-            result += "%s:\t0x"%hex(i) + Register(uint=i).hex + "\n"
+            result += "%s:\t0x"%hex(i) + Register(i).hex + "\n"
         self.assertEqual(mmix.__print_general_purpose_registers__(), result)
 
     def test__print_special_purpose_registers__(self):
@@ -137,10 +137,10 @@ class TestMMIX(unittest.TestCase):
         tmp_map[30] = 'rYY'
         tmp_map[31] = 'rZZ'
         for i in range(MMIX.NUM_OF_SPECIAL_PURPOSE_REGISTER):
-            mmix.special_purpose_registers[i].update(uint=i)
+            mmix.special_purpose_registers[i].set_value(i)
         result = str()
         for i in range(MMIX.NUM_OF_SPECIAL_PURPOSE_REGISTER):
-            result += "%s:\t0x"%tmp_map[i] + Register(uint=i).hex + "\n"
+            result += "%s:\t0x"%tmp_map[i] + Register(i).hex + "\n"
         self.assertEqual(mmix.__print_special_purpose_registers__(), result)
 
     def test__LDB_direct__(self):
@@ -148,16 +148,16 @@ class TestMMIX(unittest.TestCase):
         Verify that "LDB $X, $Y, Z" can load signed Byte M[$Y+Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z = Byte(int=-2)    # an direct operator
-        mmix.memory.setByte(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte(int=-5))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z = Byte(-2)    # an direct operator
+        mmix.memory.setByte(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte(-5))
         mmix.__LDB_direct__(X, Y, Z)
         self.assertEqual(
             mmix.general_purpose_registers[X.uint].int,
-            mmix.memory.readByte(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int)).int
+            mmix.memory.readByte(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).int
             )
 
     def test__LDB_indirect__(self):
@@ -165,242 +165,242 @@ class TestMMIX(unittest.TestCase):
         Verify that "LDB $X, $Y, $Z" can load signed Byte M[$Y+$Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setByte(Octa(uint=5+4), Byte(int=-5))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setByte(Octa(5+4), Byte(-5))
         mmix.__LDB_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readByte(Octa(uint=5+4)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readByte(Octa(5+4)).int)
 
     def test__LDBU_direct__(self):
         '''
         Verify that "LDBU $X, $Y, Z" can load unsigned Byte M[$Y+Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z = Byte(int=-2)    # an direct operator
-        mmix.memory.setByte(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte(int=99))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z = Byte(-2)    # an direct operator
+        mmix.memory.setByte(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte(99))
         mmix.__LDBU_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readByte(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readByte(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
 
     def test__LDBU_indirect__(self):
         '''
         Verify that "LDBU $X, $Y, $Z" can load unsigned Byte M[$Y+$Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setByte(Octa(uint=5+4), Byte(int=99))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setByte(Octa(5+4), Byte(99))
         mmix.__LDBU_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readByte(Octa(uint=5+4)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readByte(Octa(5+4)).uint)
 
     def test__LDW_direct__(self):
         '''
         Verify that "LDW $X, $Y, Z" can load signed Wyde M[$Y+Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z = Byte(int=-2)    # an direct operator
-        mmix.memory.setWyde(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int), Wyde(int=-5))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z = Byte(-2)    # an direct operator
+        mmix.memory.setWyde(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Wyde(-5))
         mmix.__LDW_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readWyde(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readWyde(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).int)
 
     def test__LDW_indirect__(self):
         '''
         Verify that "LDW $X, $Y, $Z" can load signed Wyde M[$Y+$Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setWyde(Octa(uint=5+4), Wyde(int=-5))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setWyde(Octa(5+4), Wyde(-5))
         mmix.__LDW_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readWyde(Octa(uint=5+4)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readWyde(Octa(5+4)).int)
 
     def test__LDWU_direct__(self):
         '''
         Verify that "LDWU $X, $Y, Z" can load unsigned Wyde M[$Y+Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z = Byte(int=-2)    # an direct operator
-        mmix.memory.setWyde(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int), Wyde(int=99))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z = Byte(-2)    # an direct operator
+        mmix.memory.setWyde(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Wyde(99))
         mmix.__LDWU_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readWyde(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readWyde(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
 
     def test__LDWU_indirect__(self):
         '''
         Verify that "LDWU $X, $Y, $Z" can load unsigned Wyde M[$Y+$Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setWyde(Octa(uint=5+4), Wyde(int=99))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setWyde(Octa(5+4), Wyde(99))
         mmix.__LDWU_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readWyde(Octa(uint=5+4)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readWyde(Octa(5+4)).uint)
 
     def test__LDT_direct__(self):
         '''
         Verify that "LDT $X, $Y, Z" can load signed Tetra M[$Y+Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z = Byte(int=-2)    # an direct operator
-        mmix.memory.setTetra(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int), Tetra(int=-5))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z = Byte(-2)    # an direct operator
+        mmix.memory.setTetra(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Tetra(-5))
         mmix.__LDT_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readTetra(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readTetra(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).int)
 
     def test__LDT_indirect__(self):
         '''
         Verify that "LDT $X, $Y, $Z" can load signed Tetra M[$Y+$Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(uint=5+4), Tetra(int=-5))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setTetra(Octa(5+4), Tetra(-5))
         mmix.__LDT_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readTetra(Octa(uint=5+4)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readTetra(Octa(5+4)).int)
 
     def test__LDTU_direct__(self):
         '''
         Verify that "LDTU $X, $Y, Z" can load unsigned Tetra M[$Y+Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z = Byte(int=-2)    # an direct operator
-        mmix.memory.setTetra(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int), Tetra(int=99))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z = Byte(-2)    # an direct operator
+        mmix.memory.setTetra(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Tetra(99))
         mmix.__LDTU_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readTetra(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readTetra(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
 
     def test__LDTU_indirect__(self):
         '''
         Verify that "LDTU $X, $Y, $Z" can load unsigned Tetra M[$Y+$Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(uint=5+4), Tetra(int=99))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setTetra(Octa(5+4), Tetra(99))
         mmix.__LDTU_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readTetra(Octa(uint=5+4)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readTetra(Octa(5+4)).uint)
 
     def test__LDO_direct__(self):
         '''
         Verify that "LDO $X, $Y, Z" can load signed Octa M[$Y+Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z = Byte(int=-2)    # an direct operator
-        mmix.memory.setOcta(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int), Octa(int=-5))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z = Byte(-2)    # an direct operator
+        mmix.memory.setOcta(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Octa(-5))
         mmix.__LDO_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readOcta(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readOcta(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).int)
 
     def test__LDO_indirect__(self):
         '''
         Verify that "LDO $X, $Y, $Z" can load signed Octa M[$Y+$Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setOcta(Octa(uint=5+4), Octa(int=-5))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setOcta(Octa(5+4), Octa(-5))
         mmix.__LDO_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readOcta(Octa(uint=5+4)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readOcta(Octa(5+4)).int)
 
     def test__LDOU_direct__(self):
         '''
         Verify that "LDOU $X, $Y, Z" can load unsigned Octa M[$Y+Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z = Byte(int=-2)    # an direct operator
-        mmix.memory.setOcta(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int), Octa(int=99))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z = Byte(-2)    # an direct operator
+        mmix.memory.setOcta(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Octa(99))
         mmix.__LDOU_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readOcta(Octa(uint=mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readOcta(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
 
     def test__LDOU_indirect__(self):
         '''
         Verify that "LDOU $X, $Y, $Z" can load unsigned Octa M[$Y+$Z] into register $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setOcta(Octa(uint=5+4), Octa(int=99))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setOcta(Octa(5+4), Octa(99))
         mmix.__LDOU_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readOcta(Octa(uint=5+4)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readOcta(Octa(5+4)).uint)
 
     def test__LDHT_indirect__(self):
         '''
         Verify that "LDHT $X, $Y, $Z|Z" can load Tetra into the most significant half of general_purpose_register X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(uint=5-2), Tetra(int=0x12345678))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setTetra(Octa(5-2), Tetra(0x12345678))
         mmix.__LDHT__(X, Y, Z, is_direct=True)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 0x1234567800000000)
 
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(uint=5+4), Tetra(int=0x12345678))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setTetra(Octa(5+4), Tetra(0x12345678))
         mmix.__LDHT__(X, Y, Z, is_direct=False)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 0x1234567800000000)
 
@@ -409,23 +409,23 @@ class TestMMIX(unittest.TestCase):
         Verify LDA can load address $Y+$Z|Z can be loaded into $X.
         '''
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
         mmix.__LDA__(X, Y, Z, is_direct=True)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 5-2)
 
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(uint=5+4), Tetra(int=0x12345678))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setTetra(Octa(5+4), Tetra(0x12345678))
         mmix.__LDA__(X, Y, Z, is_direct=False)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 5+4)
 
@@ -437,26 +437,26 @@ class TestMMIX(unittest.TestCase):
         '''
         # STB $1 $3 -2
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=-2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(-2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
         mmix.__STB__(X, Y, Z, is_direct=True)
-        self.assertEqual(mmix.memory.readByte(Y_value + Z), Byte(uint=0x08))
+        self.assertEqual(mmix.memory.readByte(Y_value + Z), Byte(0x08))
 
         # STB $1 $3 $2
         mmix = MMIX()
-        X = Byte(uint=1)    # index of general_purpose_registers
-        mmix.general_purpose_registers[X.uint].update(uint=0x0102030405060708)  # set content of $X to some value
-        Y, Y_value = Byte(uint=3), Octa(uint=5) # index of general_purpose_registers and its content
-        mmix.general_purpose_registers[Y.uint].update(uint=Y_value.uint)  # set content of $Y
-        Z, Z_value = Byte(int=2), Octa(uint=4)
-        mmix.general_purpose_registers[Z.uint].update(uint=Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(uint=5+4), Tetra(int=0x12345678))
+        X = Byte(1)    # index of general_purpose_registers
+        mmix.general_purpose_registers[X.uint].set_value(0x0102030405060708)  # set content of $X to some value
+        Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
+        mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
+        Z, Z_value = Byte(2), Octa(4)
+        mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
+        mmix.memory.setTetra(Octa(5+4), Tetra(0x12345678))
         mmix.__STB__(X, Y, Z, is_direct=False)
-        self.assertEqual(mmix.memory.readByte(Y_value + Z_value), Byte(uint=0x08))
+        self.assertEqual(mmix.memory.readByte(Y_value + Z_value), Byte(0x08))
 
 if __name__ == '__main__':
     unittest.main()

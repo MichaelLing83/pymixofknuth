@@ -288,15 +288,15 @@ class MMIX:
         @return (None)
         '''
         if is_direct:
-            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)
+            memory_addr = Octa(self.general_purpose_registers[Y.uint].uint+Z.int)
         else:
-            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint + self.general_purpose_registers[Z.uint].int)
+            memory_addr = Octa(self.general_purpose_registers[Y.uint].uint + self.general_purpose_registers[Z.uint].int)
         if is_signed:
             tmp = self.memory.read(memory_addr, data_type).int
-            self.general_purpose_registers[X.uint].update(int=tmp)
+            self.general_purpose_registers[X.uint].set_value(tmp)
         else:
             tmp = self.memory.read(memory_addr, data_type).uint
-            self.general_purpose_registers[X.uint].update(uint=tmp)
+            self.general_purpose_registers[X.uint].set_value(tmp)
 
     @typecheck
     def __LDO_direct__(self, X: Byte, Y: Byte, Z: Byte) -> nothing:
@@ -366,11 +366,11 @@ class MMIX:
         @return (None)
         '''
         if is_direct:
-            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)
+            memory_addr = Octa(self.general_purpose_registers[Y.uint].uint+Z.int)
         else:
-            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].int)
+            memory_addr = Octa(self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].int)
         tmp = self.memory.readTetra(memory_addr).uint
-        self.general_purpose_registers[X.uint].update(int=tmp<<(Octa.SIZE_IN_BIT - Tetra.SIZE_IN_BIT))
+        self.general_purpose_registers[X.uint].set_value(tmp<<(Octa.SIZE_IN_BIT - Tetra.SIZE_IN_BIT))
 
     @typecheck
     def __LDA__(self, X: Byte, Y: Byte, Z: Byte, is_direct: bool) -> nothing:
@@ -388,10 +388,10 @@ class MMIX:
         @return (None)
         '''
         if is_direct:
-            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint+Z.int)
+            memory_addr = Octa(self.general_purpose_registers[Y.uint].uint+Z.int)
         else:
-            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].int)
-        self.general_purpose_registers[X.uint].update(uint=memory_addr.uint)
+            memory_addr = Octa(self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].int)
+        self.general_purpose_registers[X.uint].set_value(memory_addr.uint)
 
     @typecheck
     def __STx__(self, X: Byte, Y: Byte, Z: Byte, data_type: one_of((Byte, Wyde, Tetra, Octa)), is_signed: bool, is_direct: bool) -> nothing:
@@ -410,16 +410,16 @@ class MMIX:
         @return (None)
         '''
         if is_direct:
-            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint + Z.int)
+            memory_addr = Octa(self.general_purpose_registers[Y.uint].uint + Z.int)
         else:
-            memory_addr = Octa(uint=self.general_purpose_registers[Y.uint].uint + self.general_purpose_registers[Z.uint].int)
+            memory_addr = Octa(self.general_purpose_registers[Y.uint].uint + self.general_purpose_registers[Z.uint].int)
         if is_signed:
             # TODO: overflow check needs to be added.
             tmp = self.general_purpose_registers[X.uint].uint & 0xFF
-            self.memory.set(memory_addr, Byte, Byte(uint=tmp))
+            self.memory.set(memory_addr, Byte, Byte(tmp))
         else:
             tmp = self.general_purpose_registers[X.uint].uint & 0xFF
-            self.memory.set(memory_addr, Byte, Byte(uint=tmp))
+            self.memory.set(memory_addr, Byte, Byte(tmp))
     
     @typecheck
     def __STB__(self, X: Byte, Y: Byte, Z: Byte, is_direct: bool) -> nothing:

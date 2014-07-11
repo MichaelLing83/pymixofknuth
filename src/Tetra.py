@@ -1,20 +1,31 @@
-﻿from bitstring import BitArray
-from Byte import Byte
+﻿'''
+Author: Michael Duo Ling
+'''
 from typecheck import *
-from Utilities import guarantee
 from Numeric import Numeric
 
 class Tetra(Numeric):
     '''
+    work-around to refer to Tetra in typecheck
     '''
-    SIZE_IN_BIT = 32   # bits
-    SIZE_IN_BYTE = int(SIZE_IN_BIT/Byte.SIZE_IN_BIT)    # 4 Byte
-    
+    pass
+
+class Tetra(Numeric):
+    '''
+    4 Bytes numeric.
+    '''
+
+    SIZE_IN_BYTE = 4    # 4 Byte
+    SIZE_IN_BIT = SIZE_IN_BYTE * Numeric.BYTE_SIZE_IN_BIT   # bits
+
     @typecheck
-    def __init__(self, *args, **kwargs) -> nothing:
-        self._bitstring = self._genBitString(Tetra.SIZE_IN_BIT, *args, **kwargs)
-        self.length = self._bitstring.length
-        self.int = self._bitstring.int
-        self.uint = self._bitstring.uint
-        self.bin = self._bitstring.bin
-        self.hex = self._bitstring.hex
+    def __init__(   #pylint: disable=W0231
+            self,
+            value: lambda x: isinstance(x, Tetra) or isinstance(x, int)=0
+        ) -> nothing:
+        '''
+        Create a Tetra object.
+
+        @return (Tetra): an instance of Tetra class.
+        '''
+        self.__init_self__(Tetra, value)

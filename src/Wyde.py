@@ -1,23 +1,31 @@
-﻿from bitstring import BitArray
-from Byte import Byte
+﻿'''
+Author: Michael Duo Ling
+'''
 from typecheck import *
-from Utilities import guarantee
 from Numeric import Numeric
 
 class Wyde(Numeric):
     '''
+    work-around to refer to Wyde in typecheck
+    '''
+    pass
+
+class Wyde(Numeric):
+    '''
+    2 Bytes numeric.
     '''
 
-    SIZE_IN_BIT = 16   # bits
-    SIZE_IN_BYTE = int(SIZE_IN_BIT/Byte.SIZE_IN_BIT)    # 2 Byte
-    
+    SIZE_IN_BYTE = 2    # 2 Byte
+    SIZE_IN_BIT = SIZE_IN_BYTE * Numeric.BYTE_SIZE_IN_BIT   # bits
+
     @typecheck
-    def __init__(self, *args, **kwargs) -> nothing:
+    def __init__(   # pylint: disable=W0231
+            self,
+            value: lambda x: isinstance(x, Wyde) or isinstance(x, int)=0
+        ) -> nothing:
         '''
+        Create a Wyde object.
+
+        @return (Wyde): an instance of Wyde class.
         '''
-        self._bitstring = self._genBitString(Wyde.SIZE_IN_BIT, *args, **kwargs)
-        self.length = self._bitstring.length
-        self.int = self._bitstring.int
-        self.uint = self._bitstring.uint
-        self.bin = self._bitstring.bin
-        self.hex = self._bitstring.hex
+        self.__init_self__(Wyde, value)

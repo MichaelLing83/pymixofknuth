@@ -6,6 +6,7 @@ from Wyde import Wyde
 from Tetra import Tetra
 from Octa import Octa
 from typecheck import *
+from Numeric import Range
 
 class Memory:
     '''
@@ -26,10 +27,10 @@ class Memory:
         @return: an object of requested class type.
         '''
         # address boundary check is done per __get_byte__ call.
-        result = 0
-        for offset in range(class_type.SIZE_IN_BYTE):
-            result += self.__get_byte__(address.uint + offset).uint << (8*(class_type.SIZE_IN_BYTE - offset - 1))
-        return class_type(uint=result)
+        result = class_type()
+        for offset in Range(Octa, 0, class_type.SIZE_IN_BYTE, 1):
+            result.set_byte(offset.uint, self.__get_byte__(address + offset))
+        return result
 
     @typecheck
     def set(self, address: Octa, class_type: one_of((Byte, Wyde, Tetra, Octa)), value):
@@ -45,19 +46,19 @@ class Memory:
         if value.__class__ is not class_type:
             raise Exception("Given value is of class %s, but instance of class %s is expected." % (value.__class__, class_type))
         for offset in range(class_type.SIZE_IN_BYTE):
-            tmp = value._bitstring[offset * Byte.SIZE_IN_BIT : offset * Byte.SIZE_IN_BIT + Byte.SIZE_IN_BIT].uint
-            self.__set_byte__(address.uint + offset, Byte(uint=tmp))
+            tmp = value._bitstring[offset * Byte.SIZE_IN_BIT : offset * Byte.SIZE_IN_BIT + Byte.SIZE_IN_BIT].uint # pylint: disable=W0212
+            self.__set_byte__(address.uint + offset, Byte(tmp))
 
     @typecheck
-    def __get_byte__(self, address: int) -> Byte:
+    def __get_byte__(self, address: Octa) -> Byte:
         '''
-        Used internally to get an Byte object from given memory address. Return Byte(uint=0x00) if that address is not found.
+        Used internally to get an Byte object from given memory address. Return Byte(0x00) if that address is not found.
         '''
-        if address < 0 or address >= 2**64:
-            raise Exception("Memory_address={0:#0{width}} is out of boundary!".format(address, width=int(Octa.SIZE_IN_BIT / 4) + 2))
-        if address in self.memory:
-            return Byte(uint=self.memory[address].uint)
-        return Byte(uint=0x00)
+        # if address < 0 or address >= 2**64:
+            # raise Exception("Memory_address={0:#0{width}} is out of boundary!".format(address, width=int(Octa.SIZE_IN_BIT / 4) + 2))
+        if address.uint in self.memory:
+            return Byte(self.memory[address.uint])
+        return Byte()
 
     @typecheck
     def __set_byte__(self, address: int, byte: Byte) -> nothing:
@@ -66,7 +67,7 @@ class Memory:
         '''
         if address < 0 or address >= 2**64:
             raise Exception("Memory_address={0:#0{width}} is out of boundary!".format(address, width=int(Octa.SIZE_IN_BIT / 4) + 2))
-        self.memory[address] = Byte(uint=byte.uint)
+        self.memory[address] = Byte(byte.uint)
 
     @typecheck
     def setByte(self, address: Octa, value: Byte) -> nothing:
@@ -140,12 +141,12 @@ class Memory:
                 is_first_entry = False
                 if address_uint != 0:
                     result += "...\n"
-                address = Octa(uint=address_uint)
+                address = Octa(address_uint)
                 result += "0x" + address.hex + ":\t0x" + self.readByte(address).hex + "\n"
             else:
                 if address_uint != previous_address_uint+1:
                     result += "...\n"
-                address = Octa(uint=address_uint)
+                address = Octa(address_uint)
                 result += "0x" + address.hex + ":\t0x" + self.readByte(address).hex + "\n"
             previous_address_uint = address_uint
         if address_list[-1] != 2**Octa.SIZE_IN_BIT-1:
@@ -192,7 +193,7 @@ class Memory:
                 #print("\n===DEBUG===\n")
                 if address_uint != previous_address_uint+Wyde.SIZE_IN_BYTE:
                     result += "...\n"
-            address = Octa(uint=address_uint)
+            address = Octa(address_uint)
             result += "0x" + address.hex + ":\t0x" + self.readWyde(address).hex + "\n"
             previous_address_uint = address_uint
         if address_list[-1] != 2**Octa.SIZE_IN_BIT-Wyde.SIZE_IN_BYTE:
