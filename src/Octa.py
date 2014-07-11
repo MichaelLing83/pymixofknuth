@@ -2,7 +2,6 @@
 Author: Michael Duo Ling
 '''
 from Numeric import Numeric
-from Byte import Byte
 from typecheck import *
 
 class Octa(Numeric):

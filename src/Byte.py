@@ -5,11 +5,8 @@
 A class representing one byte (i.e. 8 bit).
 '''
 
-from bitstring import BitArray
 from typecheck import *
-from Utilities import guarantee
 from Numeric import Numeric
-from copy import deepcopy
 
 class Byte(Numeric):
     # work-around to refer to Byte in typecheck
