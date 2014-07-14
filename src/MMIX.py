@@ -58,7 +58,7 @@ class MMIX:
 
         @return (Tetra): an four-byte instruction
         '''
-        return self.memory.readTetra(address)
+        return self.memory.read(address, Tetra)
 
     @typecheck
     def __get_special_register_index_by_name__(self, special_purpose_register_name: str) -> int:
@@ -75,20 +75,15 @@ class MMIX:
         raise Exception("Special purpose register: %s is not defined." % special_purpose_register_name)
 
     @typecheck
-    def __print_memory__(self, unit=Byte) -> str:
+    def __print_memory__(self, unit: one_of((Byte, Wyde, Tetra, Octa))=Byte) -> str:
         '''
         Print current memory to a string. Can be used for debugging purpose.
 
-        @unit=Byte (class): which class to use as printing granuity, Byte or Wyde.
+        @unit=Byte (class): which class to use as printing granuity.
 
         @return (str): a string representation of current memory.
         '''
-        if unit == Byte:
-            return self.memory.print_by_byte()
-        elif unit == Wyde:
-            return self.memory.print_by_wyde()
-        else:
-            raise Exception("Given memory unit=%s is not supported!" % unit)
+        return self.memory.to_str(unit)
 
     @typecheck
     def __print_general_purpose_registers__(self) -> str:
@@ -369,7 +364,7 @@ class MMIX:
             memory_addr = Octa(self.general_purpose_registers[Y.uint].uint+Z.int)
         else:
             memory_addr = Octa(self.general_purpose_registers[Y.uint].uint+self.general_purpose_registers[Z.uint].int)
-        tmp = self.memory.readTetra(memory_addr).uint
+        tmp = self.memory.read(memory_addr, Tetra).uint
         self.general_purpose_registers[X.uint].set_value(tmp<<(Octa.SIZE_IN_BIT - Tetra.SIZE_IN_BIT))
 
     @typecheck
@@ -416,11 +411,11 @@ class MMIX:
         if is_signed:
             # TODO: overflow check needs to be added.
             tmp = self.general_purpose_registers[X.uint].uint & 0xFF
-            self.memory.set(memory_addr, Byte, Byte(tmp))
+            self.memory.set(memory_addr, Byte(tmp))
         else:
             tmp = self.general_purpose_registers[X.uint].uint & 0xFF
-            self.memory.set(memory_addr, Byte, Byte(tmp))
-    
+            self.memory.set(memory_addr, Byte(tmp))
+
     @typecheck
     def __STB__(self, X: Byte, Y: Byte, Z: Byte, is_direct: bool) -> nothing:
         '''

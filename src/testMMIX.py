@@ -36,10 +36,10 @@ class TestMMIX(unittest.TestCase):
         Verify that MMIX can read one instruction.
         '''
         mmix = MMIX()
-        mmix.memory.setByte(Octa(0), Byte(0x31))
-        mmix.memory.setByte(Octa(1), Byte(0x32))
-        mmix.memory.setByte(Octa(2), Byte(0x33))
-        mmix.memory.setByte(Octa(3), Byte(0x34))
+        mmix.memory.set(Octa(0), Byte(0x31))
+        mmix.memory.set(Octa(1), Byte(0x32))
+        mmix.memory.set(Octa(2), Byte(0x33))
+        mmix.memory.set(Octa(3), Byte(0x34))
         self.assertEqual(mmix.__read_instruction__(Octa(0)), Tetra(0x31323334))
 
     def test__get_special_register_index_by_name__(self):
@@ -82,9 +82,9 @@ class TestMMIX(unittest.TestCase):
 
     def test__print_memory__(self):
         mmix = MMIX()
-        mmix.memory.setOcta(Octa(0x0102030405060708), Octa(0x0102030405060708))
-        self.assertEqual(mmix.__print_memory__(), mmix.memory.print_by_byte())
-        self.assertEqual(mmix.__print_memory__(unit=Wyde), mmix.memory.print_by_wyde())
+        mmix.memory.set(Octa(0x0102030405060708), Octa(0x0102030405060708))
+        self.assertEqual(mmix.__print_memory__(), mmix.memory.to_str(Byte))
+        self.assertEqual(mmix.__print_memory__(unit=Wyde), mmix.memory.to_str(Wyde))
 
     def test__print_general_purpose_registers__(self):
         '''
@@ -153,11 +153,11 @@ class TestMMIX(unittest.TestCase):
         Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z = Byte(-2)    # an direct operator
-        mmix.memory.setByte(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte(-5))
+        mmix.memory.set(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte(-5))
         mmix.__LDB_direct__(X, Y, Z)
         self.assertEqual(
             mmix.general_purpose_registers[X.uint].int,
-            mmix.memory.readByte(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).int
+            mmix.memory.read(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte).int
             )
 
     def test__LDB_indirect__(self):
@@ -171,9 +171,9 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setByte(Octa(5+4), Byte(-5))
+        mmix.memory.set(Octa(5+4), Byte(-5))
         mmix.__LDB_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readByte(Octa(5+4)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.read(Octa(5+4), Byte).int)
 
     def test__LDBU_direct__(self):
         '''
@@ -185,9 +185,9 @@ class TestMMIX(unittest.TestCase):
         Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z = Byte(-2)    # an direct operator
-        mmix.memory.setByte(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte(99))
+        mmix.memory.set(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte(99))
         mmix.__LDBU_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readByte(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.read(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Byte).uint)
 
     def test__LDBU_indirect__(self):
         '''
@@ -200,9 +200,9 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setByte(Octa(5+4), Byte(99))
+        mmix.memory.set(Octa(5+4), Byte(99))
         mmix.__LDBU_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readByte(Octa(5+4)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.read(Octa(5+4), Byte).uint)
 
     def test__LDW_direct__(self):
         '''
@@ -214,9 +214,9 @@ class TestMMIX(unittest.TestCase):
         Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z = Byte(-2)    # an direct operator
-        mmix.memory.setWyde(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Wyde(-5))
+        mmix.memory.set(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Wyde(-5))
         mmix.__LDW_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readWyde(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.read(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Wyde).int)
 
     def test__LDW_indirect__(self):
         '''
@@ -229,9 +229,9 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setWyde(Octa(5+4), Wyde(-5))
+        mmix.memory.set(Octa(5+4), Wyde(-5))
         mmix.__LDW_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readWyde(Octa(5+4)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.read(Octa(5+4), Wyde).int)
 
     def test__LDWU_direct__(self):
         '''
@@ -243,9 +243,9 @@ class TestMMIX(unittest.TestCase):
         Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z = Byte(-2)    # an direct operator
-        mmix.memory.setWyde(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Wyde(99))
+        mmix.memory.set(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Wyde(99))
         mmix.__LDWU_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readWyde(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.read(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Wyde).uint)
 
     def test__LDWU_indirect__(self):
         '''
@@ -258,9 +258,9 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setWyde(Octa(5+4), Wyde(99))
+        mmix.memory.set(Octa(5+4), Wyde(99))
         mmix.__LDWU_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readWyde(Octa(5+4)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.read(Octa(5+4), Wyde).uint)
 
     def test__LDT_direct__(self):
         '''
@@ -272,9 +272,9 @@ class TestMMIX(unittest.TestCase):
         Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z = Byte(-2)    # an direct operator
-        mmix.memory.setTetra(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Tetra(-5))
+        mmix.memory.set(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Tetra(-5))
         mmix.__LDT_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readTetra(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.read(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Tetra).int)
 
     def test__LDT_indirect__(self):
         '''
@@ -287,9 +287,9 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(5+4), Tetra(-5))
+        mmix.memory.set(Octa(5+4), Tetra(-5))
         mmix.__LDT_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readTetra(Octa(5+4)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.read(Octa(5+4), Tetra).int)
 
     def test__LDTU_direct__(self):
         '''
@@ -301,9 +301,9 @@ class TestMMIX(unittest.TestCase):
         Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z = Byte(-2)    # an direct operator
-        mmix.memory.setTetra(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Tetra(99))
+        mmix.memory.set(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Tetra(99))
         mmix.__LDTU_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readTetra(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.read(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Tetra).uint)
 
     def test__LDTU_indirect__(self):
         '''
@@ -316,9 +316,9 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(5+4), Tetra(99))
+        mmix.memory.set(Octa(5+4), Tetra(99))
         mmix.__LDTU_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readTetra(Octa(5+4)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.read(Octa(5+4), Tetra).uint)
 
     def test__LDO_direct__(self):
         '''
@@ -330,9 +330,9 @@ class TestMMIX(unittest.TestCase):
         Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z = Byte(-2)    # an direct operator
-        mmix.memory.setOcta(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Octa(-5))
+        mmix.memory.set(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Octa(-5))
         mmix.__LDO_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readOcta(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.read(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Octa).int)
 
     def test__LDO_indirect__(self):
         '''
@@ -345,9 +345,9 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setOcta(Octa(5+4), Octa(-5))
+        mmix.memory.set(Octa(5+4), Octa(-5))
         mmix.__LDO_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.readOcta(Octa(5+4)).int)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].int, mmix.memory.read(Octa(5+4), Octa).int)
 
     def test__LDOU_direct__(self):
         '''
@@ -359,9 +359,9 @@ class TestMMIX(unittest.TestCase):
         Y, Y_value = Byte(3), Octa(5) # index of general_purpose_registers and its content
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z = Byte(-2)    # an direct operator
-        mmix.memory.setOcta(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Octa(99))
+        mmix.memory.set(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Octa(99))
         mmix.__LDOU_direct__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readOcta(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.read(Octa(mmix.general_purpose_registers[Y.uint].uint+Z.int), Octa).uint)
 
     def test__LDOU_indirect__(self):
         '''
@@ -374,9 +374,9 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setOcta(Octa(5+4), Octa(99))
+        mmix.memory.set(Octa(5+4), Octa(99))
         mmix.__LDOU_indirect__(X, Y, Z)
-        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.readOcta(Octa(5+4)).uint)
+        self.assertEqual(mmix.general_purpose_registers[X.uint].uint, mmix.memory.read(Octa(5+4), Octa).uint)
 
     def test__LDHT_indirect__(self):
         '''
@@ -389,7 +389,7 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(5-2), Tetra(0x12345678))
+        mmix.memory.set(Octa(5-2), Tetra(0x12345678))
         mmix.__LDHT__(X, Y, Z, is_direct=True)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 0x1234567800000000)
 
@@ -400,7 +400,7 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(5+4), Tetra(0x12345678))
+        mmix.memory.set(Octa(5+4), Tetra(0x12345678))
         mmix.__LDHT__(X, Y, Z, is_direct=False)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 0x1234567800000000)
 
@@ -425,7 +425,7 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(5+4), Tetra(0x12345678))
+        mmix.memory.set(Octa(5+4), Tetra(0x12345678))
         mmix.__LDA__(X, Y, Z, is_direct=False)
         self.assertEqual(mmix.general_purpose_registers[X.uint].uint, 5+4)
 
@@ -444,7 +444,7 @@ class TestMMIX(unittest.TestCase):
         Z, Z_value = Byte(-2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
         mmix.__STB__(X, Y, Z, is_direct=True)
-        self.assertEqual(mmix.memory.readByte(Y_value + Z), Byte(0x08))
+        self.assertEqual(mmix.memory.read(Y_value + Z, Byte), Byte(0x08))
 
         # STB $1 $3 $2
         mmix = MMIX()
@@ -454,9 +454,9 @@ class TestMMIX(unittest.TestCase):
         mmix.general_purpose_registers[Y.uint].set_value(Y_value.uint)  # set content of $Y
         Z, Z_value = Byte(2), Octa(4)
         mmix.general_purpose_registers[Z.uint].set_value(Z_value.uint)  # set content of $Z
-        mmix.memory.setTetra(Octa(5+4), Tetra(0x12345678))
+        mmix.memory.set(Octa(5+4), Tetra(0x12345678))
         mmix.__STB__(X, Y, Z, is_direct=False)
-        self.assertEqual(mmix.memory.readByte(Y_value + Z_value), Byte(0x08))
+        self.assertEqual(mmix.memory.read(Y_value + Z_value, Byte), Byte(0x08))
 
 if __name__ == '__main__':
     unittest.main()
